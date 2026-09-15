@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Document Manager{% endblock %}
+
+{% block content %}
+<div class="card auth-card">
+    <h2>Create Account</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="username">Login Name:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Access Code:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="confirm_password">Confirm Access Code:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+        </div>
+        
+        <button type="submit" class="btn btn-success full-width-btn">Create Account</button>
+    </form>
+    
+    <p class="centered-text">
+        Already have an account? <a href="{{ url_for('identity.authenticate') }}">Sign in here</a>
+    </p>
+</div>
+{% endblock %}

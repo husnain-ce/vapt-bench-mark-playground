@@ -1,0 +1,231 @@
+{% extends 'partials/base.html' %}
+
+{% block header %}
+  {% include 'partials/base_header.html' %}
+{% endblock %}
+
+{% block content %}
+  <!-- Page Content -->
+  <div id="page-content-wrapper">
+    {% include 'partials/navbar.html' %}
+    <div class="container-fluid">
+      <h1 class="mt-4">Challenge Solutions</h1>
+      <hr />
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header"><b>Solutions</b></div>
+            <div class="card-body">
+              <div id="toc_container">
+                <p class="toc_title">Table of Contents</p>
+                  <ul class="toc_list">
+                    <li>
+                      <b>Reconnaissance</b>
+                      <ul>
+                        <li>
+                          <a href="#recon-detection">Detecting GraphQL</a>
+                        </li>
+                        <li>
+                          <a href="#recon-fingerprinting">Fingerprinting GraphQL</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <b>Denial of Service</b>
+                      <ul>
+                        <li>
+                          <a href="#dos-batch">Batch Query Attack</a>
+                        </li>
+                        <li>
+                          <a href="#dos-recursion">Deep Recursion Query Attack</a>
+                        </li>
+                        <li>
+                          <a href="#dos-intensive">Resource Intensive Query Attack</a>
+                        </li>
+                        <li>
+                          <a href="#dos-fielddup">Field Duplication Attack</a>
+                        </li>
+                        <li>
+                          <a href="#dos-aliases">Aliases based Attack</a>
+                        </li>
+                        <li>
+                          <a href="#dos-circular-fragment">Circular Fragment</a>
+                        </li>
+                      </ul>
+                    </li>
+
+                    <li>
+                      <b>Information Disclosure</b>
+                      <ul>
+                        <li>
+                          <a href="#info-introspection">GraphQL Introspection</a>
+                        </li>
+                        <li>
+                          <a href="#info-igql">GraphQL Interface</a>
+                        </li>
+                        <li>
+                          <a href="#info-suggestions">GraphQL Field Suggestions</a>
+                        </li>
+                        <li>
+                          <a href="#info-ssrf">Server Side Request Forgery</a>
+                        </li>
+                        <li>
+                          <a href="#info-stacktrace">Stack Trace Errors</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <b>Code Execution</b>
+                      <ul>
+                        <li>
+                          <a href="#exec-os-1">OS Command Injection #1</a>
+                        </li>
+                        <li>
+                          <a href="#exec-os-2">OS Command Injection #2</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <b>Injection</b>
+                      <ul>
+                        <li>
+                          <a href="#inj-xss">Stored Cross Site Scripting</a>
+                        </li>
+                        <li>
+                          <a href="#inj-log">Log Injection // Log Spoofing</a>
+                        </li>
+                        <li>
+                          <a href="#inj-html">HTML Injection</a>
+                        </li>
+                        <li>
+                          <a href="#inj-sql">SQL Injection</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <b>Authorization Bypass</b>
+                      <ul>
+                        <li>
+                          <a href="#bypassauthz-token">GraphQL JWT Token Forge</a>
+                        </li>
+                        <li>
+                          <a href="#bypassauthz-igql">GraphQL Interface Protection Bypass</a>
+                        </li>
+                        <li>
+                          <a href="#bypassauthz-denylist">GraphQL Query Deny List Bypass</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <b>Miscellaneous</b>
+                      <ul>
+                        <li>
+                          <a href="#misc-weakpass">GraphQL Query Weak Password Protection</a>
+                        </li>
+                        <li>
+                          <a href="#misc-filewrite">Arbitrary File Write // Path Traversal</a>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+            <div class="card-body">
+              <h3 style="color:purple" id="dos-batch"><b>Overview</b></h3>
+              <hr />
+              <h4>Legend</h4>
+              <ul>
+                <li><i class="fa fa-newspaper"></i> - GraphQL Official Documentation / Blog Posts</li>
+                <li><i class="fa fa-code"></i> - Code Snippet</li>
+                <li><i class="fa fa-shield-alt"></i> - GraphQL Security Utility</li>
+                <li><i class="fa fa-bug"></i> - Published Vulnerability (H1, CVE, etc.)</li>
+              </ul>
+
+              <p>
+                <small style="color:grey"><i class="fa fa-info"></i> &nbsp; There may be more than one way to exploit any given vulnerability, the solutions demonstrated below aim to illustrate one way of achieving successful exploitation.</small>
+                <br>
+                <small style="color:grey"><i class="fa fa-info"></i> &nbsp; Some solutions include code snippets that are written in Python and use the requests library for HTTP requests.</small>
+              </p>
+
+              <h3 style="color:purple"><b>Getting Started</b></h3>
+              <hr />
+              <p>The first essential step in every security test is to gain a bit of insight into the technology the remote server is using. By knowing the technologies in use, you can start building up a plan how to attack the application or the underlying infrastructure.</p>
+              <p>For GraphQL, a tool called <a href="https://github.com/dolevf/graphw00f" target="_blank">graphw00f</a> exists. Let's explore how it can help us achieve detection and fingerprinting of GraphQL.</p>
+              <h3 style="color:purple" id="recon-detection"><b>Detecting GraphQL</b></h3>
+              <hr />
+              <p>Detecting where GraphQL lives is pretty trivial, there are common places where you would typically see a graphql endpoint. For example, <i>/graphql</i>, <i>/v1/graphql</i>, etc.</p>
+              <p>Point graphw00f at DVGA to figure out where GraphQL lives:</p>
+              <p><b><pre>
+$>  python3 graphw00f.py -d -t http://localhost:5013/graphql
+                +-------------------+
+                |     graphw00f     |
+                +-------------------+
+                  ***            ***
+                **                  ***
+              **                       **
+    +--------------+              +--------------+
+    |    Node X    |              |    Node Y    |
+    +--------------+              +--------------+
+                  ***            ***
+                     **        **
+                       **    **
+                    +------------+
+                    |   Node Z   |
+                    +------------+
+
+                graphw00f - v1.0.3
+          The fingerprinting tool for GraphQL
+           Dolev Farhi (dolev@lethalbit.com)
+
+Checking http://dvga.example.local:5013/graphql
+[*] Found GraphQL at http://dvga.example.local:5013/graphql
+[*] You can now try and fingerprint GraphQL using: graphw00f.py -t http://dvga.example.local:5013/graphql
+</pre></b>
+            </p>
+
+              <h3 style="color:purple" id="recon-fingerprinting"><b>Fingerprinting GraphQL</b></h3>
+              <hr />
+              <p>graphw00f can try and fingerprint GraphQL servers in order to determine the underlying implementation. By knowing what specific engine runs GraphQL, you can map what security mechanisms you may face during an assessment.</p>
+              <p>Point graphw00f at DVGA to figure out what technology it's running.</p>
+              <p><b><pre>
+$> python3 graphw00f.py -t http://dvga.example.local:5013/graphql -f
+
+[*] Checking if GraphQL is available at http://dvga.example.local:5013/graphql...
+[*] Found GraphQL...
+[*] Attempting to fingerprint...
+[*] Discovered GraphQL Engine: (Graphene)
+[!] Attack Surface Matrix: https://github.com/dolevf/graphw00f/blob/main/docs/graphene.md
+[!] Technologies: Python
+[!] Homepage: https://graphene-python.org
+[*] Completed.
+              </pre></b>
+            </p>
+            <p>As you can see, DVGA runs graphene. Use the Attack Surface Matrix to see <a href="https://github.com/dolevf/graphw00f/blob/main/docs/graphene.md">how Graphene ships GrapQL by default from a security perspective</a>.</p>
+              <br>
+              {% for solution in solutions %}
+                {% include solution %}
+                <br>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- /#page-content-wrapper -->
+{% endblock %}
+
+{% block scripts %}
+  {% include 'partials/base_scripts.html' %}
+  <script>
+    function reveal(element) {
+      var x = document.getElementById(element);
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+    }
+  </script>
+{% endblock %}

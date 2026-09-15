@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Commit {{ commit.id }} - {{ username }}/{{ repo_name }} - HgHub{% endblock %}
+{% block content %}
+<h1><a href="{{ url_for('view_repo', username=username, repo_name=repo_name) }}">{{ username }}/{{ repo_name }}</a></h1>
+<div class="card">
+    <h2>Commit {{ commit.id }}</h2>
+    <p><strong>Author:</strong> {{ commit.author }}</p>
+    <p><strong>Date:</strong> {{ commit.date }}</p>
+    <p><strong>Message:</strong></p>
+    <pre>{{ commit.message }}</pre>
+</div>
+<h2>Changes</h2>
+<div class="card">
+    <pre class="diff"><code>{{ diff }}</code></pre>
+</div>
+{% endblock %}

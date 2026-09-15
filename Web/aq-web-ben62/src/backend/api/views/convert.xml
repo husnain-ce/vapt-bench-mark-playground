@@ -1,0 +1,9 @@
+<timezone_conversion>
+    <converted_time>${converted_time}</converted_time>
+    <from_zone>${from_zone}</from_zone>
+    <to_zone>${to_zone}</to_zone>
+    <from_hour_angle>${from_hour_angle}</from_hour_angle>
+    <from_minute_angle>${from_minute_angle}</from_minute_angle>
+    <to_hour_angle>${to_hour_angle}</to_hour_angle>
+    <to_minute_angle>${to_minute_angle}</to_minute_angle>
+</timezone_conversion>

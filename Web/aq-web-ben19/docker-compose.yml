@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-mailuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mailpass}
+      POSTGRES_DB: ${POSTGRES_DB:-maildb}
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - mailnet
+
+  sso:
+    build: ./sso
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-mailuser}:${POSTGRES_PASSWORD:-mailpass}@db:5432/${POSTGRES_DB:-maildb}?sslmode=disable
+      EMAIL_DOMAIN: ${EMAIL_DOMAIN:-example.local}
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - mailnet
+
+  objectstore:
+    build: ./objectstore
+    environment:
+      STORAGE_PATH: /data
+    volumes:
+      - object-data:/data
+    restart: always
+    networks:
+      - mailnet
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-mailuser}:${POSTGRES_PASSWORD:-mailpass}@db:5432/${POSTGRES_DB:-maildb}?sslmode=disable
+      SSO_URL: http://sso:8081
+      OBJECTSTORE_HOST: objectstore:8082
+      EMAIL_DOMAIN: ${EMAIL_DOMAIN:-example.local}
+    depends_on:
+      - db
+      - sso
+      - objectstore
+    restart: always
+    networks:
+      - mailnet
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8081:80"
+    restart: always
+    depends_on:
+      - api
+      - sso
+      - objectstore
+    networks:
+      - mailnet
+
+volumes:
+  db-data:
+  object-data:
+
+networks:
+  mailnet:
+    driver: bridge
+

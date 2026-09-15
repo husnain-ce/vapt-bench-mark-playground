@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account | Nightbyte{% endblock %}
+
+{% block content %}
+<section class="auth-shell">
+    <form class="auth-card" method="post" action="{{ url_for('auth.register_post') }}">
+        <p class="eyebrow">Create Account</p>
+        <h1>Claim your corner of the shelf.</h1>
+        <input type="text" name="username" placeholder="Username" autocomplete="username">
+        <input type="password" name="password" placeholder="Password" autocomplete="new-password">
+        <button type="submit">Create Account</button>
+        <p class="auth-alt">Already inside? <a href="{{ url_for('auth.login') }}">Log in</a>.</p>
+    </form>
+</section>
+{% endblock %}

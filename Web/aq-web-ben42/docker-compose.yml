@@ -1,0 +1,24 @@
+version: '3.2'
+
+services:
+  web:
+    build: ./web
+    restart: always
+    ports:
+      - "127.0.0.1:8443:443"
+      - "127.0.0.1:8080:80"
+    environment:
+      - "BOT_HOST=bot"
+      - "SAFE_ORIGINS=https://web,http://more-letters.asisctf.com,https://more-letters.asisctf.com"
+    volumes:
+      - ./certs:/certs
+  bot:
+    build: ./bot
+    restart: always
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - "FLAG=ASIS{test_flag}"
+      - "CAPTCHA_SECRET="
+    volumes:
+      - ./certs:/certs

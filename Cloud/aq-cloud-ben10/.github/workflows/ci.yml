@@ -1,0 +1,19 @@
+name: PR Greeter
+on:
+  pull_request_target:              # <-- VULN 1: runs with repo secrets for
+    types: [opened, edited]         #     UNTRUSTED fork PRs, and can check out PR head
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR code       # <-- VULN 1b: checks out attacker-controlled
+        uses: actions/checkout@v4    #     head SHA while secrets are in scope
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Greet the contributor
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          echo "Thanks for the PR titled: ${{ github.event.pull_request.title }}"
+          echo "CI build starting..."

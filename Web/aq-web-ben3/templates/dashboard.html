@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Todo App{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1 style="margin-bottom: 0;">My Todos</h1>
+    <div style="display: flex; gap: 10px;">
+        <button id="settings-btn" class="btn">Settings</button>
+        {% if saml_enabled %}
+            <a href="{{ url_for('saml_logout') }}" class="btn btn-danger">Logout</a>
+        {% else %}
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="message" style="margin-bottom: 20px;">
+    Welcome, <strong>{{ username }}</strong>!
+</div>
+
+<!-- Todo List Section -->
+<div id="todo-section" class="info-box" style="margin-bottom: 20px;">
+    <form id="todo-form" style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <input type="text" id="todo-input" placeholder="Add a new todo..."
+               style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+        <button type="submit" class="btn" style="padding: 10px 20px;">Add</button>
+    </form>
+
+    <div id="todos-list">
+        {% if todos %}
+            {% for todo in todos %}
+            <div class="todo-item" data-id="{{ todo.id }}" style="display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; {% if todo.completed %}opacity: 0.6;{% endif %}">
+                <input type="checkbox" class="todo-checkbox" {% if todo.completed %}checked{% endif %}
+                       style="width: 18px; height: 18px; cursor: pointer;">
+                <span class="todo-title" style="flex: 1; {% if todo.completed %}text-decoration: line-through; color: #888;{% endif %}">{{ todo.title }}</span>
+                <button class="todo-delete" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;">Delete</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #888; text-align: center; padding: 20px;">No todos yet. Add one above!</p>
+        {% endif %}
+    </div>
+</div>
+
+
+<!-- Settings Panel (Hidden by default) -->
+<div id="settings-panel" style="display: none; margin-top: 20px;">
+    <h2>User Information</h2>
+    <div class="info-box">
+        {% if user %}
+            {# Extract friendly field names from SAML attributes #}
+            {% set email = user.get('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', [''])[0] %}
+            {% set name = user.get('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', [''])[0] %}
+            {% set given_name = user.get('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname', [''])[0] %}
+            {% set surname = user.get('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname', [''])[0] %}
+            {% set nickname = user.get('http://schemas.auth0.com/nickname', [''])[0] %}
+            {% set picture = user.get('http://schemas.auth0.com/picture', [''])[0] %}
+            {% set email_verified = user.get('http://schemas.auth0.com/email_verified', [''])[0] %}
+            {% set provider = user.get('http://schemas.auth0.com/identities/default/provider', [''])[0] %}
+
+            {% if picture %}
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="{{ picture }}" alt="Profile Picture" style="border-radius: 50%; width: 80px; height: 80px;">
+            </div>
+            {% endif %}
+
+            <div class="user-info">
+                <strong>Name:</strong> {{ name or 'N/A' }}
+            </div>
+            <div class="user-info">
+                <strong>Email:</strong> {{ email or 'N/A' }}
+                {% if email_verified == 'true' %}
+                    <span style="color: #28a745;">✓ Verified</span>
+                {% endif %}
+            </div>
+            <div class="user-info">
+                <strong>First Name:</strong> {{ given_name or 'N/A' }}
+            </div>
+            <div class="user-info">
+                <strong>Last Name:</strong> {{ surname or 'N/A' }}
+            </div>
+            <div class="user-info">
+                <strong>Username:</strong> {{ nickname or 'N/A' }}
+            </div>
+            <div class="user-info">
+                <strong>Authentication Provider:</strong> {{ provider or 'SAML' }}
+            </div>
+            <div class="user-info">
+                <strong>Authentication Type:</strong> SAML 2.0
+            </div>
+
+            <details style="margin-top: 20px;">
+                <summary style="cursor: pointer; color: #667eea; font-weight: bold;">Show All Attributes</summary>
+                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px; font-size: 12px;">
+                    {% for key, value in user.items() %}
+                    <div style="margin: 5px 0; word-break: break-all;">
+                        <strong style="color: #555;">{{ key }}:</strong>
+                        {% if value is iterable and value is not string %}
+                            {{ value|join(', ') }}
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </details>
+        {% else %}
+            <div class="user-info">
+                <strong>Username:</strong> {{ username }}
+            </div>
+            <div class="user-info">
+                <strong>Authentication Type:</strong> Simple Login
+            </div>
+        {% endif %}
+    </div>
+
+    <h2>Authentication Settings</h2>
+    <div class="info-box">
+        <div class="user-info">
+            <strong>SAML Status:</strong>
+            {% if saml_enabled %}
+                <span style="color: #28a745;">Enabled</span>
+            {% else %}
+                <span style="color: #6c757d;">Disabled</span>
+            {% endif %}
+        </div>
+        <div class="user-info">
+            <strong>SAML Configuration:</strong>
+            {% if saml_configured %}
+                <span style="color: #28a745;">Configured</span>
+            {% else %}
+                <span style="color: #dc3545;">Not Configured</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="nav">
+        <a href="{{ url_for('saml_config_page') }}" class="btn">SAML Configuration</a>
+    </div>
+</div>
+
+<script>
+// Todo functionality
+const todoForm = document.getElementById('todo-form');
+const todoInput = document.getElementById('todo-input');
+const todosList = document.getElementById('todos-list');
+
+// Add new todo
+todoForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = todoInput.value.trim();
+    if (!title) return;
+
+    try {
+        const response = await fetch('/todos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            location.reload(); // Simple refresh for now
+        } else {
+            alert(data.message || 'Failed to add todo');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to add todo');
+    }
+});
+
+// Handle checkbox changes and delete buttons
+todosList.addEventListener('click', async (e) => {
+    const todoItem = e.target.closest('.todo-item');
+    if (!todoItem) return;
+
+    const todoId = todoItem.dataset.id;
+
+    // Toggle completion
+    if (e.target.classList.contains('todo-checkbox')) {
+        const completed = e.target.checked;
+        try {
+            const response = await fetch(`/todos/${todoId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ completed })
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to update todo');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to update todo');
+        }
+    }
+
+    // Delete todo
+    if (e.target.classList.contains('todo-delete')) {
+        if (!confirm('Are you sure you want to delete this todo?')) return;
+
+        try {
+            const response = await fetch(`/todos/${todoId}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to delete todo');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to delete todo');
+        }
+    }
+});
+
+// Settings panel toggle
+const settingsBtn = document.getElementById('settings-btn');
+const settingsPanel = document.getElementById('settings-panel');
+const todoSection = document.getElementById('todo-section');
+
+settingsBtn.addEventListener('click', () => {
+    if (settingsPanel.style.display === 'none' || !settingsPanel.style.display) {
+        // Show settings, hide todos
+        settingsPanel.style.display = 'block';
+        todoSection.style.display = 'none';
+        settingsBtn.textContent = 'Back to Todos';
+    } else {
+        // Show todos, hide settings
+        settingsPanel.style.display = 'none';
+        todoSection.style.display = 'block';
+        settingsBtn.textContent = 'Settings';
+    }
+});
+</script>
+{% endblock %}

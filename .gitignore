@@ -1,0 +1,37 @@
+# Secrets / credentials
+.env
+.env.*
+*.env
+*credentials*
+*credential*
+client_cred.txt
+secrets.txt
+secret.txt
+*.pem
+*.key
+
+# Databases
+*.sqlite
+*.sqlite3
+*.db
+
+# Android / binaries
+*.apk
+*.aab
+*.ipa
+
+# Build files
+build/
+dist/
+.gradle/
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# macOS
+.DS_Store

@@ -1,0 +1,16 @@
+services:
+  hg_platform:
+    build: .
+    ports:
+      - "5000:5000"
+    user: "nobody:nogroup"
+    read_only: true
+    tmpfs:
+      - /tmp/repos:mode=0755,size=128m,uid=65534,gid=65534
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1

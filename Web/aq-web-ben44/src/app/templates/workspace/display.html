@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Display Document - Document Manager{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="flex-between">
+        <div>
+            <h2 id="document-heading">{{ document.heading }}</h2>
+            <div class="document-meta">
+                <p>Created: {{ document.created_time }} | Modified: {{ document.modified_time }}</p>
+            </div>
+        </div>
+        <div class="flex-actions">
+            <a href="{{ url_for('workspace.home') }}" class="btn">Back to Workspace</a>
+        </div>
+    </div>
+
+    <div class="document-body" id="document-body">
+        <!-- hidden tag -->
+        <p id="document-body-hidden">{{ document.body }}</p>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.0/purify.min.js" nonce="{{ nonce }}"></script>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/options.js') }}"></script>
+<script nonce="{{ nonce }}">
+    if (options.user_styling) {
+
+        const theme = document.createElement('style');
+        const hidden = document.getElementById('document-body-hidden');
+
+        const body = document.getElementById('document-body');
+        // disable tag id
+        body.innerHTML = DOMPurify.sanitize(body.textContent,{ RETURN_DOM: true, ALLOWED_TAGS: ['class', 'style'] }).ownerDocument.documentElement.innerHTML;
+
+        theme.textContent = document.getElementById('user-theme-styles').textContent;
+        theme.nonce = '{{ nonce }}';
+        document.head.appendChild(theme);
+        localStorage.setItem('user_theme', theme.textContent);
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+services:
+  web:
+    build: ./web
+    restart: always
+    volumes:
+      - ./web/app.py:/app/app.py:ro
+    command: >
+      uvicorn app:app
+      --host 0.0.0.0 --port 8000
+      --workers 4
+      --limit-concurrency 200
+      --backlog 2048
+      --timeout-keep-alive 5
+      --loop uvloop --http httptools
+      --proxy-headers
+    environment:
+      - PYTHONUNBUFFERED=1
+      - SESSION_SECRET=REDACTED
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+  bot:
+    build: ./bot
+    restart: always
+    environment:
+      - APP_BASE=http://127.0.0.1:8000
+      - FLAG=ASIS{REDACTED}
+      - VISIT_TIMEOUT_MS=3000
+    depends_on:
+      - web
+    network_mode: "service:web"
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+

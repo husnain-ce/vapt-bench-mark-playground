@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Storefront | Nightbyte{% endblock %}
+
+{% block content %}
+<section class="hero-grid">
+    <div class="hero-panel hero-panel-wide">
+        <p class="eyebrow">Storefront</p>
+        <h1>Own the loudest builds on the quietest corner of the net.</h1>
+        <p class="hero-copy">Nightbyte curates fast games, strange aesthetics, and a rotating stack of capsules from studios that pretend they sleep.</p>
+        <form class="search-bar" method="get" action="{{ url_for('store.index') }}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search games, studios, or vague obsessions">
+            <button type="submit">Scan Store</button>
+        </form>
+        <div class="hero-stats">
+            <div><strong>{{ games|length }}</strong><span>Visible releases</span></div>
+            <div><strong>{{ spotlight_depth }}</strong><span>Staff queue depth</span></div>
+            <div><strong>24/7</strong><span>Neon uptime</span></div>
+        </div>
+    </div>
+    <div class="hero-panel stack-panel">
+        <p class="eyebrow">Gift Key Check</p>
+        <form method="post" action="{{ url_for('store.gift_check') }}" data-async-target="#gift-preview">
+            <input type="text" name="code" placeholder="XXXX-XXXX-XXXX">
+            <button type="submit">Validate Format</button>
+        </form>
+        <div id="gift-preview" class="preview-slot">{% include "partials/gift_preview.html" %}</div>
+    </div>
+    <div class="hero-panel stack-panel">
+        <p class="eyebrow">Creator Card Preview</p>
+        <form method="post" action="{{ url_for('store.community_preview') }}" data-async-target="#creator-preview">
+            <input type="text" name="name" placeholder="Creator name">
+            <input type="text" name="status" placeholder="Status line">
+            <select name="accent">
+                <option value="cyan">Cyan</option>
+                <option value="mint">Mint</option>
+                <option value="rose">Rose</option>
+                <option value="gold">Gold</option>
+            </select>
+            <button type="submit">Render Card</button>
+        </form>
+        <div id="creator-preview" class="preview-slot">{% include "partials/community_preview.html" %}</div>
+    </div>
+</section>
+
+<section class="content-grid">
+    <div class="main-column">
+        <div class="section-header">
+            <p class="eyebrow">Featured Shelf</p>
+            <h2>Hot capsules in tonight's rotation</h2>
+        </div>
+        <div class="game-grid">
+            {% for game in games %}
+                <article class="game-card">
+                    <a class="game-card-link" href="{{ url_for('store.game', slug=game.slug) }}">
+                        <img src="{{ url_for('store.capsule', slug=game.slug) }}" alt="{{ game.title }}">
+                    </a>
+                    <div class="game-card-body">
+                        <div class="game-card-topline">
+                            <span>{{ game.studio }}</span>
+                            <span>{{ game.genre }}</span>
+                        </div>
+                        <h3><a href="{{ url_for('store.game', slug=game.slug) }}">{{ game.title }}</a></h3>
+                        <p>{{ game.tagline }}</p>
+                        <div class="price-row">
+                            <strong>{{ game.price_cents|money }}</strong>
+                            {% if current_user.is_authenticated %}
+                                <form method="post" action="{{ url_for('store.add_to_library') }}">
+                                    <input type="hidden" name="slug" value="{{ game.slug }}">
+                                    <button type="submit">Add to Library</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+    <aside class="side-column">
+        <div class="side-card">
+            <p class="eyebrow">Market Pulse</p>
+            <h3>Fast flips, louder finishes</h3>
+            <ul class="mini-list">
+                {% for item in market_items %}
+                    <li>
+                        <strong>{{ item.name }}</strong>
+                        <span>{{ item.finish }} · {{ item.price }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+            <a class="text-link" href="{{ url_for('store.market') }}">Browse the full market</a>
+        </div>
+        <div class="side-card">
+            <p class="eyebrow">Player Flow</p>
+            <h3>New accounts start clean</h3>
+            <p>Build a library, request a front-page spotlight, and keep your profile sharp enough to survive public judgment.</p>
+            {% if not current_user.is_authenticated %}
+                <a class="button-link block-link" href="{{ url_for('auth.register') }}">Join Nightbyte</a>
+            {% endif %}
+        </div>
+    </aside>
+</section>
+{% endblock %}

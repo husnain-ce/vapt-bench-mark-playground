@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitMail Leakr</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        .tab-label {
+            flex: 1;
+            text-align: center;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            border-bottom: 3px solid transparent;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .tab-label:hover {
+            color: #007BFF;
+        }
+        input[type="radio"] {
+            display: none;
+        }
+        input[type="radio"]:checked + .tab-label {
+            color: #007BFF;
+            border-color: #007BFF;
+        }
+        .form-content {
+            display: none;
+            padding-top: 20px;
+        }
+        #tab-1:checked ~ #content-1,
+        #tab-2:checked ~ #content-2 {
+            display: block;
+        }
+        .form-content form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-content input[type="text"],
+        .form-content textarea {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-content button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-content button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GitMail Leakr</h1>
+        <!-- Radio buttons for tabs -->
+        <input type="radio" id="tab-1" name="tab" checked>
+        <label class="tab-label" for="tab-1">GitHub Username</label>
+        
+        <input type="radio" id="tab-2" name="tab">
+        <label class="tab-label" for="tab-2">Git URLs</label>
+
+        <!-- Tab content -->
+        <div class="form-content" id="content-1">
+            <form id="username-form">
+                <label for="github-username">Enter GitHub Username:</label>
+                <input type="text" id="github-username" name="github_username" placeholder="e.g., splitline">
+                <button type="submit">Find</button>
+            </form>
+        </div>
+        <div class="form-content" id="content-2">
+            <form action="/find" method="post" id="url-form">
+                <label for="repo_url">Enter Git URLs (one per line, max 5):</label>
+                <textarea id="repo_url" name="repo_url" rows="5" placeholder="e.g., https://github.com/user/repo"></textarea>
+                <input type="text" id="github-username" name="github_username" placeholder="Username pattern (optional)">
+                <button type="submit">Find</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // block form submission for username, fetch github api to get repos
+        const form = document.getElementById('username-form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            form.querySelector('button').textContent = '...'
+            const username = document.getElementById('github-username').value;
+            fetch(`https://api.github.com/users/${username}/repos?type=owner&sort=pushed`)
+                .then(response => response.json())
+                .then(data => {
+                    const repos = data.filter(repo => !repo.fork).map(repo => repo.clone_url).slice(0, 5);
+                    const textarea = document.getElementById('repo_url');
+                    textarea.value = repos.join('\n');
+                    document.getElementById('tab-2').checked = true;
+                    form.querySelector('button').textContent = 'Find';
+                    document.querySelector('#url-form input[name="github_username"]').value = username;
+                });
+        });
+    </script>
+</body>
+</html>

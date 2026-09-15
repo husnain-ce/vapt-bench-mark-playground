@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}SAML Organizations - Flask SAML App{% endblock %}
+
+{% block content %}
+<h1>SAML Organizations</h1>
+
+<div class="info-box">
+    <p>Manage multiple SAML Identity Provider configurations.</p>
+    <p>Each organization has its own IdP settings and users.</p>
+</div>
+
+<!-- List of existing organizations -->
+<h2>Configured Organizations</h2>
+<div id="organizations-list" style="margin-top: 20px;">
+    {% if organizations %}
+        {% for org in organizations %}
+        <div class="info-box" style="margin-bottom: 20px; border-left: 4px solid {% if org.enabled %}#28a745{% else %}#6c757d{% endif %};">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0 0 10px 0;">{{ org.organization_display_name or org.organization }}</h3>
+                    <p style="margin: 5px 0;"><strong>Organization ID:</strong> {{ org.organization }}</p>
+                    <p style="margin: 5px 0;"><strong>IdP Entity ID:</strong> {{ org.idp_entity_id or 'Not configured' }}</p>
+                    <p style="margin: 5px 0;"><strong>Status:</strong>
+                        <span style="color: {% if org.enabled %}#28a745{% else %}#dc3545{% endif %};">
+                            {% if org.enabled %}✓ Enabled{% else %}✗ Disabled{% endif %}
+                        </span>
+                        {% if org.configured %}
+                            <span style="color: #28a745;">| ✓ Configured</span>
+                        {% else %}
+                            <span style="color: #dc3545;">| ✗ Not Configured</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{{ url_for('edit_saml_org', organization=org.organization) }}" class="btn" style="padding: 8px 16px;">Edit</a>
+                    {% if org.organization != 'default' %}
+                    <button onclick="deleteOrganization('{{ org.organization }}')" class="btn btn-danger" style="padding: 8px 16px;">Delete</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="info-box" style="background-color: #fff3cd; border-color: #ffc107;">
+            <p style="color: #856404;">No organizations configured yet.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Add new organization button -->
+<div style="text-align: center; margin-top: 30px;">
+    <a href="{{ url_for('add_saml_org') }}" class="btn">+ Add New Organization</a>
+</div>
+
+<div class="nav" style="margin-top: 30px;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+<script>
+async function deleteOrganization(org) {
+    if (!confirm(`Are you sure you want to delete organization "${org}"? This action cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`{{ url_for('delete_saml_org', organization='__ORG__') }}`.replace('__ORG__', org), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert(result.message);
+            window.location.reload();
+        } else {
+            alert('Error: ' + result.message);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,6 @@
+<error>
+    <code>500</code>
+    <message>Invalid input provided.</message>
+    <details>${error}</details>
+    <timestamp>${timestamp}</timestamp>
+</error>

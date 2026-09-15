@@ -1,0 +1,43 @@
+<!-- Start -->
+<h3 style="color:purple" id="dos-fielddup"><b>Denial of Service :: Field Duplication Attack</b></h3>
+<hr />
+<h5>Problem Statement</h5>
+<p>Various GraphQL implementation do not bother de-duplicating repeating fields in GraphQL, allowing the user to multiply the same requested fields as they wish.</p>
+<p>This causes extra load on the server to return the same fields over and over again.</p>
+<p>There are a few ways in which this issue can be mitigated:</p>
+<p>
+<ul>
+  <li>Field De-Duplication</li>
+  <li>Query Cost Analysis</li>
+</ul>
+</p>
+<p><b>Field De-Duplication</b> can be achieved by using a middleware function to traverse the schema and remove any duplications, or simply analyze repeating patterns in order to reject the query.<br></p>
+<p><b>Query Cost Analysis</b> will be beneficial against these attacks, since each field will ultimately result in increased cost.</p>
+<h5>Resources</h5>
+<ul>
+    <li>
+      <a href="https://graphql-ruby.org/queries/complexity_and_depth.html" target="_blank">
+        <i class="fa fa-newspaper"></i> Ruby GraphQL - Complexity and Depth
+      </a>
+    </li>
+</ul>
+<h5>Exploitation Solution <button class="reveal" onclick="reveal('sol-dos-fielddup')">Show</button></h5>
+<div id="sol-dos-fielddup" style="display:none">
+  <pre class="bash">
+# Beginner mode
+
+query {
+  pastes {
+    owner {
+      pastes {
+            ipAddr # 1
+            ipAddr # 2
+            ipAddr # 3
+            ipAddr # 4
+            ipAddr # 1000
+          }
+        }
+      }
+}</pre>
+</div>
+<!-- End -->

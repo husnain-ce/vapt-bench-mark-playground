@@ -1,0 +1,5 @@
+RewriteEngine On
+
+<Files "getpic.php">
+    Require local
+</Files>

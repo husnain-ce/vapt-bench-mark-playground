@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Support | Nightbyte{% endblock %}
+
+{% block content %}
+<section class="hero-grid">
+    <div class="hero-panel hero-panel-wide">
+        <p class="eyebrow">Support Desk</p>
+        <h1>Draft a report before you launch it into the queue.</h1>
+        <p class="hero-copy">The preview renderer mirrors how tickets are shown on the internal dashboard.</p>
+    </div>
+    <div class="hero-panel stack-panel">
+        <p class="eyebrow">Ticket Preview</p>
+        <form method="post" action="{{ url_for('store.support_preview') }}" data-async-target="#support-preview">
+            <input type="text" name="subject" placeholder="Subject">
+            <textarea name="body" rows="6" placeholder="Describe the issue in enough detail to haunt a developer"></textarea>
+            <button type="submit">Render Ticket</button>
+        </form>
+        <div id="support-preview" class="preview-slot tall-slot">{% include "partials/support_preview.html" %}</div>
+    </div>
+</section>
+{% endblock %}

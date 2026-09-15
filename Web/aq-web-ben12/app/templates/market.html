@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Market | Nightbyte{% endblock %}
+
+{% block content %}
+<section class="hero-grid narrow-hero">
+    <div class="hero-panel hero-panel-wide">
+        <p class="eyebrow">Market</p>
+        <h1>Cosmetics, finishes, and financially questionable glow.</h1>
+        <form class="search-bar" method="get" action="{{ url_for('store.market') }}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search market items">
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+</section>
+
+<section class="market-grid">
+    {% for item in items %}
+        <article class="market-card">
+            <p class="eyebrow">{{ item.finish }}</p>
+            <h2>{{ item.name }}</h2>
+            <p>Rotating finish card for people who think inventory should sparkle louder than gameplay.</p>
+            <strong>{{ item.price }}</strong>
+        </article>
+    {% else %}
+        <div class="empty-state">
+            <h2>No market hits.</h2>
+            <p>Try a broader term or a stronger impulse to buy skins.</p>
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}

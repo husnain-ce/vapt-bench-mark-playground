@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+
+{% block title %}Jira Settings - Project Hub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="bi bi-gear"></i> Jira Configuration</h1>
+        </div>
+
+        <!-- Current Active Configuration -->
+        {% if active_config %}
+        <div class="alert alert-info">
+            <strong><i class="bi bi-check-circle"></i> Active Configuration:</strong> {{ active_config.name }}
+            <br>
+            <small>Jira URL: {{ active_config.jira_url }} | Email: {{ active_config.email }}</small>
+        </div>
+        {% else %}
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> No active Jira configuration. Please add one below.
+        </div>
+        {% endif %}
+
+        <!-- Add/Edit Configuration Form -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle"></i>
+                    <span id="form-title">Add New Configuration</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="jira-config-form">
+                    <input type="hidden" id="config-id" name="id">
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Configuration Name *</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               placeholder="e.g., Production Server" required>
+                        <small class="form-text text-muted">A friendly name to identify this configuration</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="jira_url" class="form-label">Jira URL *</label>
+                        <input type="text" class="form-control" id="jira_url" name="jira_url"
+                               placeholder="e.g., company.atlassian.net" required>
+                        <small class="form-text text-muted">Your Jira instance URL (without https://)</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email" name="email"
+                               placeholder="your.email@company.com" required>
+                        <small class="form-text text-muted">Your Jira account email</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="api_token" class="form-label">API Token *</label>
+                        <input type="password" class="form-control" id="api_token" name="api_token"
+                               placeholder="Enter your Jira API token" required>
+                        <small class="form-text text-muted">
+                            <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank">
+                                Generate API token <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="project_key" class="form-label">Default Project Key (Optional)</label>
+                        <input type="text" class="form-control" id="project_key" name="project_key"
+                               placeholder="e.g., PROJ">
+                        <small class="form-text text-muted">Default project to use when browsing issues</small>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="is_active" name="is_active">
+                        <label class="form-check-label" for="is_active">
+                            Set as active configuration
+                        </label>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Configuration
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="test-connection-btn">
+                            <i class="bi bi-plug"></i> Test Connection
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="cancel-edit-btn" style="display: none;">
+                            <i class="bi bi-x"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Saved Configurations -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-list"></i> Saved Configurations</h5>
+            </div>
+            <div class="card-body">
+                <div id="configurations-list">
+                    {% if configurations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Jira URL</th>
+                                        <th>Email</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="config-table-body">
+                                    {% for config in configurations %}
+                                    <tr data-config-id="{{ config.id }}">
+                                        <td>
+                                            <strong>{{ config.name }}</strong>
+                                            {% if config.project_key %}
+                                            <br><small class="text-muted">Project: {{ config.project_key }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ config.jira_url }}</td>
+                                        <td>{{ config.email }}</td>
+                                        <td>
+                                            {% if config.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <button class="btn btn-outline-primary edit-config-btn"
+                                                        data-config-id="{{ config.id }}">
+                                                    <i class="bi bi-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-outline-success activate-config-btn"
+                                                        data-config-id="{{ config.id }}"
+                                                        {% if config.is_active %}disabled{% endif %}>
+                                                    <i class="bi bi-check-circle"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger delete-config-btn"
+                                                        data-config-id="{{ config.id }}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No configurations saved yet. Add one using the form above.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast for notifications -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="notification-toast" class="toast" role="alert">
+        <div class="toast-header">
+            <strong class="me-auto" id="toast-title">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body" id="toast-message"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Show toast notification
+    function showToast(title, message, type = 'info') {
+        const toast = document.getElementById('notification-toast');
+        const toastTitle = document.getElementById('toast-title');
+        const toastMessage = document.getElementById('toast-message');
+        const toastHeader = toast.querySelector('.toast-header');
+
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+
+        // Update colors based on type
+        toastHeader.className = 'toast-header';
+        if (type === 'success') {
+            toastHeader.classList.add('bg-success', 'text-white');
+        } else if (type === 'error') {
+            toastHeader.classList.add('bg-danger', 'text-white');
+        } else if (type === 'warning') {
+            toastHeader.classList.add('bg-warning');
+        }
+
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    }
+
+    // Save configuration
+    document.getElementById('jira-config-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const data = {
+            name: formData.get('name'),
+            jira_url: formData.get('jira_url'),
+            email: formData.get('email'),
+            api_token: formData.get('api_token'),
+            project_key: formData.get('project_key'),
+            is_active: formData.get('is_active') === 'on'
+        };
+
+        const configId = formData.get('id');
+        const url = configId ? `/api/settings/jira/${configId}` : '/api/settings/jira';
+        const method = configId ? 'PUT' : 'POST';
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showToast('Success', result.message || 'Configuration saved successfully', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showToast('Error', result.error || 'Failed to save configuration', 'error');
+            }
+        } catch (error) {
+            showToast('Error', 'Network error: ' + error.message, 'error');
+        }
+    });
+
+    // Test connection
+    document.getElementById('test-connection-btn').addEventListener('click', async () => {
+        const formData = new FormData(document.getElementById('jira-config-form'));
+        const data = {
+            jira_url: formData.get('jira_url'),
+            email: formData.get('email'),
+            api_token: formData.get('api_token')
+        };
+
+        if (!data.jira_url || !data.email || !data.api_token) {
+            showToast('Warning', 'Please fill in URL, email, and API token first', 'warning');
+            return;
+        }
+
+        const btn = document.getElementById('test-connection-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Testing...';
+
+        try {
+            const response = await fetch('/api/settings/jira/test', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showToast('Success', result.message + ' (User: ' + result.user + ')', 'success');
+            } else {
+                showToast('Error', result.message || 'Connection failed', 'error');
+            }
+        } catch (error) {
+            showToast('Error', 'Network error: ' + error.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-plug"></i> Test Connection';
+        }
+    });
+
+    // Edit configuration
+    document.addEventListener('click', async (e) => {
+        if (e.target.closest('.edit-config-btn')) {
+            const configId = e.target.closest('.edit-config-btn').dataset.configId;
+
+            try {
+                const response = await fetch(`/api/settings/jira/${configId}`);
+                const config = await response.json();
+
+                document.getElementById('form-title').textContent = 'Edit Configuration';
+                document.getElementById('config-id').value = config.id;
+                document.getElementById('name').value = config.name;
+                document.getElementById('jira_url').value = config.jira_url;
+                document.getElementById('email').value = config.email;
+                document.getElementById('api_token').value = config.api_token;
+                document.getElementById('project_key').value = config.project_key || '';
+                document.getElementById('is_active').checked = config.is_active;
+                document.getElementById('cancel-edit-btn').style.display = 'inline-block';
+
+                // Scroll to form
+                document.getElementById('jira-config-form').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                showToast('Error', 'Failed to load configuration', 'error');
+            }
+        }
+    });
+
+    // Cancel edit
+    document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+        document.getElementById('jira-config-form').reset();
+        document.getElementById('config-id').value = '';
+        document.getElementById('form-title').textContent = 'Add New Configuration';
+        document.getElementById('cancel-edit-btn').style.display = 'none';
+    });
+
+    // Activate configuration
+    document.addEventListener('click', async (e) => {
+        if (e.target.closest('.activate-config-btn')) {
+            const configId = e.target.closest('.activate-config-btn').dataset.configId;
+
+            try {
+                const response = await fetch(`/api/settings/jira/${configId}/activate`, {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('Success', result.message, 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast('Error', result.error || 'Failed to activate configuration', 'error');
+                }
+            } catch (error) {
+                showToast('Error', 'Network error: ' + error.message, 'error');
+            }
+        }
+    });
+
+    // Delete configuration
+    document.addEventListener('click', async (e) => {
+        if (e.target.closest('.delete-config-btn')) {
+            if (!confirm('Are you sure you want to delete this configuration?')) {
+                return;
+            }
+
+            const configId = e.target.closest('.delete-config-btn').dataset.configId;
+
+            try {
+                const response = await fetch(`/api/settings/jira/${configId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('Success', result.message, 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    showToast('Error', result.error || 'Failed to delete configuration', 'error');
+                }
+            } catch (error) {
+                showToast('Error', 'Network error: ' + error.message, 'error');
+            }
+        }
+    });
+</script>
+{% endblock %}

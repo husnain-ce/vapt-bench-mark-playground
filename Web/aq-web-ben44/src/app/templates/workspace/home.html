@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Memory Vault - Memory Archive{% endblock %}
+
+{% block content %}
+<div class="flex-header">
+    <h2>💾 Memory Vault</h2>
+    <a href="{{ url_for('workspace.compose_document') }}" class="btn">+ Store Memory</a>
+</div>
+
+{% if documents %}
+    <div class="grid">
+        {% for document in documents %}
+            <div class="card document-card">
+                <div class="document-heading">{{ document.heading }}</div>
+                <div class="document-meta">
+                    Created: {{ document.created_time.strftime('%Y-%m-%d %H:%M') }}
+                    {% if document.modified_time != document.created_time %}
+                        | Modified: {{ document.modified_time.strftime('%Y-%m-%d %H:%M') }}
+                    {% endif %}
+                </div>
+                <div class="document-actions">
+                    <a href="{{ url_for('workspace.display_document', doc_id=document.id) }}" class="btn">View</a>
+                    <a href="{{ url_for('workspace.modify_document', doc_id=document.id) }}" class="btn">Edit</a>
+                    <form method="POST" action="{{ url_for('workspace.remove_document', doc_id=document.id) }}" class="inline-form" data-confirm-delete data-confirm-message="Are you sure you want to remove this document?">
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card text-center">
+        <h3>🌟 Memory vault is empty</h3>
+        <p>Store your first memory to begin your journey.</p>
+        <a href="{{ url_for('workspace.compose_document') }}" class="btn">Store First Memory</a>
+    </div>
+{% endif %}
+{% endblock %}

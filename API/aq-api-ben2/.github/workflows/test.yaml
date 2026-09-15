@@ -1,0 +1,50 @@
+name: Build & Test
+
+on:
+  pull_request:
+    branches:
+      - master
+      - blackhatgraphql
+
+  push:
+    branches:
+      - master
+      - blackhatgraphql
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-22.04
+          - ubuntu-20.04
+        pyver:
+          - '3.6'
+          - '3.7'
+          - '3.8'
+          - '3.9'
+          - '3.10'
+        exclude:
+          - os: ubuntu-22.04
+            pyver: 3.6
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.pyver }}
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+
+      - name: Run DVGA
+        run: |
+          nohup python3 ./app.py &
+
+      - name: Wait for server (sleep 5 secs)
+        run: |
+          sleep 5
+
+      - name: Run DVGA Tests
+        run: |
+          python3 -m pytest tests/*

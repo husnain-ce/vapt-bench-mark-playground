@@ -1,0 +1,37 @@
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ScrapScrap</title>
+  <link rel="stylesheet" href="/public/styles.css" />
+  <script src="/public/purify.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>ScrapScrap</h1>
+    <nav>
+      <% if (user) { %>
+        <a href="/checker">Scrap checker</a>
+        <% if (user.role == "user") { %>
+          <a href="/scrap">Scrap a website</a>
+          <a href="/files">My Scraps</a>
+        <% } %>
+        <form action="/logout" method="post">
+          <button class="link">Logout (<%= user.username %>)</button>
+        </form>
+      <% } else { %>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      <% } %>
+    </nav>
+  </header>
+  <% if (flash) { %>
+    <div class="flash <%= flash.type %>"><%= flash.message %></div>
+  <% } %>
+  <main class="container">
+    <%- body %>
+  </main>
+</body>
+</html>

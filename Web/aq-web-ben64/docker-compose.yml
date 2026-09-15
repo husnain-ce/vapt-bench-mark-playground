@@ -1,0 +1,26 @@
+services:
+  under-the-beamers-app:
+    build: ./src/app/
+    hostname: "under-the-beamers-app.internal"
+    ports:
+      - "5000:5000"
+    restart: always
+
+  under-the-beamers-bot:
+    build: ./src/bot/
+    hostname: "under-the-beamers-bot.internal"
+    ports:
+      - "4000:55555"
+    environment:
+      - FLAG=ASIS{flag_placeholder}
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      # - ENVIRONMENT=development
+    restart: unless-stopped
+    read_only: true
+    cap_drop:
+      - all
+    cap_add:
+      - CAP_SETGID # Needed for su-exec
+      - CAP_SETUID # Needed for su-exec
+    tmpfs:
+      - /tmp:mode=1733,exec

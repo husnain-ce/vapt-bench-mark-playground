@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Projects - Jira Integration Demo{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-6">
+            <i class="bi bi-folder text-primary"></i> Projects
+        </h1>
+        <p class="text-muted">All projects you have access to</p>
+    </div>
+</div>
+
+{% if projects %}
+    <div class="row">
+        {% for project in projects %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 shadow-sm hover-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            {% if project.avatarUrls and project.avatarUrls['48x48'] %}
+                                <img src="{{ project.avatarUrls['48x48'] }}" 
+                                     alt="{{ project.name }}" 
+                                     class="rounded me-3"
+                                     style="width: 48px; height: 48px;">
+                            {% else %}
+                                <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center me-3"
+                                     style="width: 48px; height: 48px; font-size: 1.5rem;">
+                                    {{ project.key[0] }}
+                                </div>
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <h5 class="card-title mb-1">{{ project.name }}</h5>
+                                <span class="badge bg-secondary">{{ project.key }}</span>
+                            </div>
+                        </div>
+                        
+                        {% if project.description %}
+                            <p class="card-text text-muted small">
+                                {{ project.description[:100] }}{% if project.description|length > 100 %}...{% endif %}
+                            </p>
+                        {% endif %}
+                        
+                        <div class="mt-3">
+                            <span class="badge bg-info text-dark me-2">
+                                <i class="bi bi-person"></i> {{ project.projectTypeKey }}
+                            </span>
+                            {% if project.lead %}
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-person-circle"></i> {{ project.lead.displayName }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('issues', project_key=project.key) }}" 
+                               class="btn btn-sm btn-primary flex-grow-1">
+                                <i class="bi bi-list-task"></i> View Issues
+                            </a>
+                            <a href="{{ url_for('project_detail', project_key=project.key) }}" 
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-info-circle"></i> Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i>
+        <strong>No projects found.</strong>
+        Either you don't have access to any projects, or there was an error fetching them.
+    </div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "number": 7,
+    "title": "hi\"; echo \"STOLEN_AWS_KEY=$AWS_SECRET_ACCESS_KEY\" | tee attacker_exfil.log; echo \"done",
+    "head": { "sha": "deadbeefcafe", "ref": "mallory:pwn" },
+    "user": { "login": "mallory" }
+  }
+}

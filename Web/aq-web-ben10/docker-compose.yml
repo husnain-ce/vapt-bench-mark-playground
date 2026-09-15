@@ -1,0 +1,14 @@
+services:
+  lylera-database:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: lylera_database_podium
+    ports:
+      - "3333:3333"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    restart: always

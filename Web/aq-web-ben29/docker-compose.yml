@@ -1,0 +1,13 @@
+services:
+  eztar:
+    build: .
+    ports:
+      - "5000:5000"
+    user: "nobody"
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=64m
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TMPDIR=/tmp

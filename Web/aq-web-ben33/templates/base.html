@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HgHub{% endblock %}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f6f8fa; color: #24292e; line-height: 1.5; }
+        a { color: #0366d6; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        header { background: #24292e; padding: 16px 0; margin-bottom: 24px; }
+        header .container { display: flex; justify-content: space-between; align-items: center; }
+        header a { color: white; }
+        .logo { font-size: 24px; font-weight: bold; }
+        nav a { margin-left: 16px; }
+        .flash { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; }
+        .flash.success { background: #dcffe4; border: 1px solid #34d058; }
+        .flash.error { background: #ffeef0; border: 1px solid #f97583; }
+        .btn { display: inline-block; padding: 8px 16px; background: #2ea44f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .btn:hover { background: #22863a; text-decoration: none; }
+        .btn-danger { background: #d73a49; }
+        .btn-danger:hover { background: #cb2431; }
+        input, textarea { width: 100%; padding: 8px 12px; border: 1px solid #e1e4e8; border-radius: 6px; font-size: 14px; margin-bottom: 12px; }
+        .card { background: white; border: 1px solid #e1e4e8; border-radius: 6px; padding: 16px; margin-bottom: 16px; }
+        .repo-list { list-style: none; }
+        .repo-list li { padding: 16px; border-bottom: 1px solid #e1e4e8; }
+        .repo-list li:last-child { border-bottom: none; }
+        pre { background: #f6f8fa; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 13px; }
+        code { font-family: 'SFMono-Regular', Consolas, monospace; }
+        .file-list { list-style: none; }
+        .file-list li { padding: 8px 12px; border-bottom: 1px solid #e1e4e8; }
+        .commit-list { list-style: none; }
+        .commit-list li { padding: 12px 0; border-bottom: 1px solid #e1e4e8; }
+        .commit-id { font-family: monospace; color: #6a737d; font-size: 13px; }
+        .commit-msg { font-weight: 500; }
+        .commit-meta { font-size: 12px; color: #6a737d; }
+        h1, h2, h3 { margin-bottom: 16px; }
+        label { display: block; font-weight: 500; margin-bottom: 4px; }
+        .diff { white-space: pre-wrap; word-break: break-all; }
+        .diff-add { background: #e6ffed; color: #22863a; }
+        .diff-del { background: #ffeef0; color: #cb2431; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="logo">HgHub</a>
+            <nav>
+                {% if session.username %}
+                    <a href="{{ url_for('new_repo') }}">New Repo</a>
+                    <a href="{{ url_for('import_repo') }}">Import</a>
+                    <a href="{{ url_for('logout') }}">Logout ({{ session.username }})</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

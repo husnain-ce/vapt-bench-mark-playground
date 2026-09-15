@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Flask SAML App{% endblock %}
+
+{% block content %}
+<h1>Login</h1>
+
+{% if saml_enabled %}
+    <div class="info-box">
+        <p>SAML authentication is currently enabled.</p>
+        <p>Select your organization below to authenticate via SAML 2.0.</p>
+        <p>You will be redirected to your Identity Provider for authentication.</p>
+    </div>
+
+    {% if saml_organizations|length > 0 %}
+        <div style="text-align: center; margin-top: 30px;">
+            <h3>Select Your Organization</h3>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px;">
+                {% for org_config in saml_organizations %}
+                <a href="{{ url_for('saml_login', organization=org_config.organization) }}" class="btn" style="min-width: 300px;">
+                    Login with {{ org_config.organization_display_name or org_config.organization }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="info-box" style="background-color: #fff3cd; border-color: #ffc107;">
+            <p style="color: #856404;">No SAML organizations configured. Please contact your administrator.</p>
+        </div>
+    {% endif %}
+{% else %}
+    <div class="info-box">
+        <p>Simple login is enabled. Enter your name to access the application.</p>
+    </div>
+    <form method="POST" action="{{ url_for('login') }}" style="text-align: center; margin-top: 30px;">
+        <div style="margin-bottom: 20px;">
+            <input type="text" name="username" placeholder="Enter your name"
+                   style="padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 5px; width: 300px;"
+                   required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+    </form>
+{% endif %}
+
+<div class="nav">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+</div>
+{% endblock %}

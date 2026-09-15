@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #101822;
+            color: #f6fbff;
+            font-family: Montserrat, Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            align-items: end;
+            padding: 14px;
+            background:
+                linear-gradient(120deg, #1b2838 0%, #101822 54%, #16202d 100%),
+                radial-gradient(circle at 75% 25%, {{ game.accent_a }}55, transparent 28%),
+                radial-gradient(circle at 88% 65%, {{ game.accent_b }}66, transparent 32%);
+        }
+        .shell {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(180deg, rgba(12, 20, 29, 0.18), rgba(12, 20, 29, 0.72));
+            box-sizing: border-box;
+        }
+        .studio {
+            font-size: 12px;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: #66c0f4;
+            font-weight: 700;
+        }
+        .title {
+            font-size: 34px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+        .tagline {
+            font-size: 14px;
+            color: #c7d5e0;
+            max-width: 70%;
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="studio">{{ game.studio }}</div>
+        <div>
+            <div class="title">{{ game.title }}</div>
+            <div class="tagline">{{ game.tagline }}</div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Github | Code Share</title>
+    <link rel="stylesheet" href="/public/styles/style.css" />
+    <link rel="stylesheet" href="/public/styles/get-github.css" />
+  </head>
+  <body>
+    <main class="container">
+      <div class="hero">
+        <h1>Get code from Github</h1>
+        <p>Place the URL of the Raw Github repository you want to read.</p>
+      </div>
+
+      <form>
+        <input
+          type="url"
+          required
+          class="input"
+          name="url"
+          placeholder="https://raw.githubusercontent.com/..."
+          pattern="https:\/\/raw\.githubusercontent\.com\/.*"
+        />
+        <button class="btn" type="submit">Fetch</button>
+      </form>
+
+      <div id="result"></div>
+    </main>
+
+    <script src="/public/scripts/get-github.js"></script>
+  </body>
+</html>

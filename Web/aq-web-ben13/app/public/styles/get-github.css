@@ -1,0 +1,42 @@
+.hero {
+  width: 100%;
+  margin-top: 20px;
+  background-color: rgb(26, 26, 26);
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+
+  h1 {
+    font-size: 3rem;
+    color: rgb(0, 165, 194);
+  }
+
+  p {
+    font-size: 1.2rem;
+    color: rgb(255, 255, 255);
+    margin-top: 10px;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+  mergin-bottom: 20px;
+
+  .btn {
+    width: 150px;
+  }
+}
+
+#result {
+  height: 600px;
+  overflow-y: auto;
+  background-color: rgb(20, 20, 20);
+  color: rgb(255, 255, 255);
+  padding: 15px;
+  border-radius: 10px;
+  white-space: pre-wrap;
+}

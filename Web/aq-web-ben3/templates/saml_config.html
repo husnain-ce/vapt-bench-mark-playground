@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}SAML Configuration - Flask SAML App{% endblock %}
+
+{% block content %}
+<h1>SAML Configuration</h1>
+
+<div class="info-box">
+    <p><strong>Current Status:</strong>
+        {% if saml_config.enabled %}
+            <span style="color: #28a745;">SAML Enabled</span>
+        {% else %}
+            <span style="color: #6c757d;">SAML Disabled</span>
+        {% endif %}
+    </p>
+    <p><strong>Configuration:</strong>
+        {% if saml_config.configured %}
+            <span style="color: #28a745;">Configured</span>
+        {% else %}
+            <span style="color: #dc3545;">Not Configured</span>
+        {% endif %}
+    </p>
+</div>
+
+<h2>Identity Provider Settings</h2>
+<form id="samlConfigForm" style="margin-top: 20px;">
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">IdP Entity ID:</label>
+        <input type="text" name="idp_entity_id" id="idp_entity_id"
+               value="{{ saml_settings.idp.entityId if saml_settings.idp else '' }}"
+               placeholder="https://your-idp.com/entity"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;"
+               required>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">IdP Single Sign-On URL:</label>
+        <input type="url" name="idp_sso_url" id="idp_sso_url"
+               value="{{ saml_settings.idp.singleSignOnService.url if saml_settings.idp and saml_settings.idp.singleSignOnService else '' }}"
+               placeholder="https://your-idp.com/sso"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;"
+               required>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">IdP Single Logout URL:</label>
+        <input type="url" name="idp_slo_url" id="idp_slo_url"
+               value="{{ saml_settings.idp.singleLogoutService.url if saml_settings.idp and saml_settings.idp.singleLogoutService else '' }}"
+               placeholder="https://your-idp.com/slo"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">IdP X.509 Certificate:</label>
+        <textarea name="idp_cert" id="idp_cert" rows="8"
+                  placeholder="-----BEGIN CERTIFICATE-----&#10;MIIDXTCCAkW...&#10;-----END CERTIFICATE-----"
+                  style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; font-family: monospace;"
+                  required>{{ saml_settings.idp.x509cert if saml_settings.idp else '' }}</textarea>
+        <small style="color: #6c757d;">Paste the IdP's X.509 certificate (without line breaks in the certificate data)</small>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <button type="submit" class="btn">Save Configuration</button>
+    </div>
+</form>
+
+<div id="message" style="margin-top: 20px; display: none;"></div>
+
+<h2>Enable/Disable SAML</h2>
+<div class="info-box" style="margin-top: 20px;">
+    <p>Toggle SAML authentication. When enabled, all users will be logged out and must authenticate via SAML.</p>
+    <div style="text-align: center; margin-top: 15px;">
+        {% if saml_config.enabled %}
+            <button id="toggleSaml" class="btn btn-danger" onclick="toggleSAML(false)">Disable SAML</button>
+        {% else %}
+            <button id="toggleSaml" class="btn" onclick="toggleSAML(true)">Enable SAML</button>
+        {% endif %}
+    </div>
+</div>
+
+<div class="nav" style="margin-top: 30px;">
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+<script>
+document.getElementById('samlConfigForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const messageDiv = document.getElementById('message');
+
+    try {
+        const response = await fetch('{{ url_for("save_saml_config") }}', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        messageDiv.style.display = 'block';
+        if (result.success) {
+            messageDiv.className = 'message';
+            messageDiv.textContent = result.message;
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = 'Error: ' + result.message;
+        }
+    } catch (error) {
+        messageDiv.style.display = 'block';
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'Error: ' + error.message;
+    }
+});
+
+async function toggleSAML(enable) {
+    const messageDiv = document.getElementById('message');
+
+    try {
+        const response = await fetch('{{ url_for("toggle_saml") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ enable: enable })
+        });
+
+        const result = await response.json();
+
+        messageDiv.style.display = 'block';
+        if (result.success) {
+            messageDiv.className = 'message';
+            messageDiv.textContent = result.message;
+
+            if (result.logout) {
+                setTimeout(() => {
+                    window.location.href = '{{ url_for("login") }}';
+                }, 2000);
+            } else {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        } else {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = 'Error: ' + result.message;
+        }
+    } catch (error) {
+        messageDiv.style.display = 'block';
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'Error: ' + error.message;
+    }
+}
+</script>
+
+{% endblock %}

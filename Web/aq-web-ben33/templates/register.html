@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Register - HgHub{% endblock %}
+{% block content %}
+<h1>Register</h1>
+<div class="card" style="max-width: 400px;">
+    <form method="POST">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autocomplete="username" pattern="[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]">
+        <small style="display: block; color: #6a737d; margin-bottom: 12px;">Letters, numbers, dots, underscores, hyphens only.</small>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password">
+        <small style="display: block; color: #6a737d; margin-bottom: 12px;">Minimum 8 characters.</small>
+        <button type="submit" class="btn">Register</button>
+    </form>
+    <p style="margin-top: 16px;">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+</div>
+{% endblock %}

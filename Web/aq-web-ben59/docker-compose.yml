@@ -1,0 +1,14 @@
+services:
+  bot:
+    build: ./challenge/
+    ports:
+      - "3000:3000"
+    environment:
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - BOT_USERNAME=superbot
+      - BOT_PWD=superbot #not the same on remote
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1733,exec
+      - /usr/app/data:mode=1733

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Memory Archive{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <h1>✨ Memory Archive</h1>
+                {% if session.account_id %}
+                <ul>
+                    <li><a href="{{ url_for('workspace.home') }}">Memory Vault</a></li>
+                    <li><a href="{{ url_for('workspace.compose_document') }}">Create Memory</a></li>
+                    <li><a href="{{ url_for('identity.terminate_session') }}">Disconnect ({{ session.login_name }})</a></li>
+                </ul>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+        <!-- Page-specific scripts -->
+        {% block scripts %}{% endblock %}
+        <script nonce="{{ nonce }}">
+            const theme = document.createElement('style');
+            theme.textContent = localStorage.getItem('user_theme') || "";
+            theme.nonce = '{{ nonce }}';
+            document.head.appendChild(theme);
+        </script>
+    </div>
+</body>
+</html>

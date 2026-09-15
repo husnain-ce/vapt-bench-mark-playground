@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ username }}/{{ repo_name }} - HgHub{% endblock %}
+{% block content %}
+<h1>{{ username }}/{{ repo_name }}</h1>
+
+{% if session.username == username %}
+<form method="POST" action="{{ url_for('delete_repo', username=username, repo_name=repo_name) }}" style="margin-bottom: 16px;" onsubmit="return confirm('Are you sure you want to delete this repository?');">
+    <button type="submit" class="btn btn-danger">Delete Repository</button>
+</form>
+{% endif %}
+
+<div class="card" style="margin-bottom: 16px; padding: 8px 16px;">
+    <strong>Revision:</strong> <code>{{ current_rev }}</code>
+    {% if current_rev != 'tip' %}
+    <a href="{{ url_for('view_repo', username=username, repo_name=repo_name) }}" style="margin-left: 12px;">Back to tip</a>
+    {% endif %}
+</div>
+
+<h2>Files</h2>
+<div class="card">
+    {% if files %}
+    <ul class="file-list">
+        {% for file in files %}
+        <li><a href="{{ url_for('view_file', username=username, repo_name=repo_name, rev=current_rev, filepath=file) }}">{{ file }}</a></li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No files yet. Clone and push to add files.</p>
+    {% endif %}
+</div>
+
+<h2>Recent Commits</h2>
+<div class="card">
+    {% if commits %}
+    <ul class="commit-list">
+        {% for commit in commits %}
+        <li>
+            <a href="{{ url_for('view_commit', username=username, repo_name=repo_name, rev=commit.id) }}">
+                <span class="commit-id">{{ commit.id }}</span>
+                <span class="commit-msg">{{ commit.message }}</span>
+            </a>
+            <a href="{{ url_for('view_repo', username=username, repo_name=repo_name, rev=commit.id) }}" style="margin-left: 8px; font-size: 12px;">[browse]</a>
+            <div class="commit-meta">{{ commit.author }} - {{ commit.date }}</div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No commits yet.</p>
+    {% endif %}
+</div>
+
+<h2>Clone / Push</h2>
+<div class="card">
+    <code>Not implemented yet.</code>
+</div>
+{% endblock %}

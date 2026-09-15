@@ -1,0 +1,45 @@
+services:
+  reverse-proxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./reverse-proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
+      - sandbox
+    env_file: "chall.env"
+
+  web:
+    build: ./web-src
+    expose: 
+      - "80"
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_RUN_PORT: 80
+      FLASK_ENV: production 
+    env_file: "chall.env"
+
+  sandbox:
+    build: ./sandbox-src
+    expose:
+      - "80"
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_RUN_PORT: 80
+      FLASK_ENV: production
+    env_file: "chall.env"
+
+  bot:
+    build: ./bot-src
+    network_mode: host  # For local testing
+    expose:
+      - "1337"
+    ports: 
+      - "1337:1337"
+    environment:
+      FLAG: 'ctf{REDACTED}' # Use a small flag and in ctfd case-insensitive.
+    env_file: "chall.env"
+

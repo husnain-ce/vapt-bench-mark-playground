@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Cat Rater</title>
+	<style>
+		body {
+			background-color: #E9EFEC;
+			color: #16423C;
+			font-family: arial;
+			margin-top: 300px;
+		}
+
+		.cont {
+			margin: 0px auto;
+			width: fit-content;
+			text-align: center;
+		}
+
+		.title {
+			font-weight: bold;
+			font-size: 23px;
+		}
+
+		.desc {
+			margin-top: 20px;
+			font-size: 18px;
+		}
+
+		.link {
+			margin-top: 25px;
+			background-color: #C4DAD2;
+			border: 0px;
+			font-size: 16px;
+			border-radius: 2px;
+			padding: 10px 10px;
+			color: #16423c;
+			width: 250px;
+		}
+
+		.btn {
+			font-size: 16px;
+			padding: 10px 25px;
+			border: 0px;
+			border-radius: 2px;
+			margin-left: 4px;
+			background-color: #16423C;
+			cursor: pointer;
+			color: white;
+		}
+
+		input::placeholder {
+			color: #16423c;
+		}
+	</style>
+</head>
+<body>
+	<div class="cont">
+		<div class="title">
+			Cat Rater
+		</div>
+		<div class="desc">
+			Enter a link to your cat picture and our super smart AI will tell you how cute your cat is.
+		</div>
+		<form action="/rate" method="POST">
+			<input class="link" name="link" placeholder="http://">
+			<input class="btn" type="submit">
+		</form>
+	</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Flask SAML App{% endblock %}
+
+{% block content %}
+<h1>Welcome to Flask SAML App</h1>
+<div class="info-box">
+    <p>This is a demonstration Flask application with configurable authentication.</p>
+    {% if saml_enabled %}
+        <p>SAML authentication is currently <strong style="color: #667eea;">enabled</strong>.</p>
+    {% else %}
+        <p>Simple login is currently active. SAML can be configured from the dashboard.</p>
+    {% endif %}
+</div>
+<div style="text-align: center; margin-top: 30px;">
+    <a href="{{ url_for('login') }}" class="btn">Login</a>
+</div>
+{% endblock %}

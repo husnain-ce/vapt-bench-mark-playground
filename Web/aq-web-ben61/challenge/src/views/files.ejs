@@ -1,0 +1,50 @@
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #1e1e1e;
+    color: #ddd;
+    padding: 20px;
+  }
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  ul.list {
+    list-style: none;
+    padding: 0;
+  }
+  ul.list li {
+    margin: 8px 0;
+  }
+  ul.list li code {
+    background-color: #2a2a2a;
+    color: #9cdcfe;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.2s ease;
+  }
+  ul.list li code:hover {
+    background-color: #3a3a3a;
+  }
+  .empty {
+    font-style: italic;
+    color: #888;
+  }
+</style>
+
+<h2>Your Scraps</h2>
+<ul class="list">
+  <% if (!entries || entries.length === 0) { %>
+    <li class="empty">No data recovered.</li>
+  <% } else { %>
+    <% entries.forEach(e => { %>
+      <li>
+        <code onclick="document.location.href='/files/<%= e.path %>';">
+          /<%= e.name %>
+        </code>
+      </li>
+    <% }) %>
+  <% } %>
+</ul>

@@ -1,0 +1,20 @@
+services:
+  nightbyte:
+    build: .
+    container_name: nightbyte
+    ports:
+      - "5000:5000"
+    environment:
+      SECRET_KEY: "nightbyte-local-secret"
+      FLAG: "f13{press_lane}"
+      PRESS_USER: "pressdesk"
+      PRESS_PASS: "neonvault"
+      SITE_ORIGIN: "https://localhost:5000"
+      DB_PATH: "/data/nightbyte.db"
+      BOT_WORKERS: "4"
+      BOT_VISIT_MS: "15000"
+    volumes:
+      - nightbyte-data:/data
+
+volumes:
+  nightbyte-data:

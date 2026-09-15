@@ -1,0 +1,50 @@
+services:
+  proxy:
+    container_name: codeshare_proxy
+    image: nginx:latest
+    restart: always
+    ports:
+      - "10000:80"
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - bot
+      - app
+      - internal
+
+  redis:
+    container_name: codeshare_redis
+    image: redis:latest
+    restart: always
+
+  bot:
+    container_name: codeshare_bot
+    build:
+      context: bot
+      args:
+        - BROWSER=chromium
+    restart: always
+    environment:
+      DEBUG_TOKEN: 635b64ba3cbc60eec6c9eb07d5ae240da02a777f960c94e24a22309a2b3ea1e5
+      APPNAME: Admin
+      APPURL: http://proxy/
+      APPURLREGEX: ^http(|s)://.*$
+      APPLIMIT: 5
+      APPLIMITTIME: 60
+      USE_PROXY: 1
+      BROWSER: chromium
+  app:
+    container_name: codeshare_app
+    build:
+      context: app
+    restart: always
+    environment:
+      DEBUG_TOKEN: 635b64ba3cbc60eec6c9eb07d5ae240da02a777f960c94e24a22309a2b3ea1e5
+
+  internal:
+    container_name: codeshare_internal
+    build:
+      context: internal
+    restart: always
+    depends_on:
+      - redis

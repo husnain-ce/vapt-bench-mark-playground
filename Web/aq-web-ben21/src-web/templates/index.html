@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Welcome to the Book App</h2>
+<p>This is the public home page. Please <a href="{{ url_for('login') }}">login</a> to access your dashboard and report URLs.</p>
+{% endblock %}

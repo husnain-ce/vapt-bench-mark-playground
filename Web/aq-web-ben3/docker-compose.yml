@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  flask-saml-app:
+    build: .
+    container_name: flask-saml-app
+    ports:
+      - "8080:5000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key-change-in-production}
+    volumes:
+      # Persist database across container restarts
+      - ./data:/app/data
+      # Mount app code for development (hot reload) - uncomment for dev
+      # - .:/app
+    restart: unless-stopped
+    networks:
+      - saml-network
+
+networks:
+  saml-network:
+    driver: bridge

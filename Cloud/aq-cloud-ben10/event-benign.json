@@ -1,0 +1,9 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "number": 6,
+    "title": "Fix typo in README",
+    "head": { "sha": "abc123", "ref": "alice:docs" },
+    "user": { "login": "alice" }
+  }
+}

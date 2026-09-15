@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Access Terminal - Memory Archive{% endblock %}
+
+{% block content %}
+<div class="card auth-card">
+    <h2>🔐 Access Terminal</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="username">User ID:</label>
+            <input type="text" id="username" name="username" required placeholder="Enter your identifier">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Memory Key:</label>
+            <input type="password" id="password" name="password" required placeholder="••••••••">
+        </div>
+        
+        <button type="submit" class="btn btn-success full-width-btn">Connect</button>
+    </form>
+    
+    <p class="centered-text">
+        New user? <a href="{{ url_for('identity.create_account') }}">Initialize profile</a>
+    </p>
+</div>
+{% endblock %}

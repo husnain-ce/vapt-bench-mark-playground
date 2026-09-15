@@ -1,0 +1,12 @@
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^api/proxy/?$ api/proxy.php [QSA,L]
+    RewriteRule ^api/recipe/?$ api/recipe.php [QSA,L]
+</IfModule>
+
+<Files "products.php">
+    Require all denied
+</Files>

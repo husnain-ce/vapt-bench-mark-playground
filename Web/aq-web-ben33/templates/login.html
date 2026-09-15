@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Login - HgHub{% endblock %}
+{% block content %}
+<h1>Login</h1>
+<div class="card" style="max-width: 400px;">
+    <form method="POST">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autocomplete="username">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+        <button type="submit" class="btn">Login</button>
+    </form>
+    <p style="margin-top: 16px;">Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_new %}Add{% else %}Edit{% endif %} SAML Organization - Flask SAML App{% endblock %}
+
+{% block content %}
+<h1>{% if is_new %}Add New{% else %}Edit{% endif %} SAML Organization</h1>
+
+<div class="info-box">
+    <p>Configure SAML Identity Provider settings for this organization.</p>
+    {% if not is_new %}
+        <p><strong>Organization ID:</strong> {{ org.organization }}</p>
+    {% endif %}
+</div>
+
+<form id="samlOrgForm" style="margin-top: 30px;">
+    {% if is_new %}
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Organization ID:</label>
+        <input type="text" name="organization" id="organization"
+               placeholder="e.g., acme-corp, hacker-org"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;"
+               required>
+        <small style="color: #6c757d;">Unique identifier (lowercase, no spaces, use hyphens)</small>
+    </div>
+    {% endif %}
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Organization Display Name:</label>
+        <input type="text" name="organization_display_name" id="organization_display_name"
+               value="{% if not is_new %}{{ org.organization_display_name or '' }}{% endif %}"
+               placeholder="e.g., Acme Corporation"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+        <small style="color: #6c757d;">Human-readable name shown in UI</small>
+    </div>
+
+    <h2>Identity Provider Settings</h2>
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">IdP Entity ID:</label>
+        <input type="text" name="idp_entity_id" id="idp_entity_id"
+               value="{% if not is_new %}{{ org.idp_entity_id or '' }}{% endif %}"
+               placeholder="https://your-idp.com/entity"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;"
+               required>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">IdP Single Sign-On URL:</label>
+        <input type="url" name="idp_sso_url" id="idp_sso_url"
+               value="{% if not is_new %}{{ org.idp_sso_url or '' }}{% endif %}"
+               placeholder="https://your-idp.com/sso"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;"
+               required>
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">IdP Single Logout URL:</label>
+        <input type="url" name="idp_slo_url" id="idp_slo_url"
+               value="{% if not is_new %}{{ org.idp_slo_url or '' }}{% endif %}"
+               placeholder="https://your-idp.com/slo"
+               style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">IdP X.509 Certificate:</label>
+        <textarea name="idp_cert" id="idp_cert" rows="8"
+                  placeholder="-----BEGIN CERTIFICATE-----&#10;MIIDXTCCAkW...&#10;-----END CERTIFICATE-----"
+                  style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; font-family: monospace;"
+                  required>{% if not is_new %}{{ org.idp_x509_cert or '' }}{% endif %}</textarea>
+        <small style="color: #6c757d;">Paste the IdP's X.509 certificate</small>
+    </div>
+
+    <h2>Status</h2>
+
+    <div style="margin-bottom: 20px;">
+        <label style="display: flex; align-items: center; cursor: pointer;">
+            <input type="checkbox" name="enabled" id="enabled"
+                   {% if not is_new and org.enabled %}checked{% endif %}
+                   style="margin-right: 10px; width: 20px; height: 20px; cursor: pointer;">
+            <span style="font-weight: bold;">Enable this organization</span>
+        </label>
+        <small style="color: #6c757d;">Users can log in via this IdP when enabled</small>
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <button type="submit" class="btn">{% if is_new %}Create Organization{% else %}Save Changes{% endif %}</button>
+    </div>
+</form>
+
+<div id="message" style="margin-top: 20px; display: none;"></div>
+
+<div class="nav" style="margin-top: 30px;">
+    <a href="{{ url_for('list_saml_orgs') }}" class="btn btn-secondary">Back to Organizations</a>
+</div>
+
+<script>
+document.getElementById('samlOrgForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const messageDiv = document.getElementById('message');
+
+    // Convert to JSON
+    const data = {};
+    formData.forEach((value, key) => {
+        if (key === 'enabled') {
+            data[key] = document.getElementById('enabled').checked;
+        } else {
+            data[key] = value;
+        }
+    });
+
+    try {
+        {% if is_new %}
+        const url = '{{ url_for("create_saml_org") }}';
+        {% else %}
+        const url = '{{ url_for("update_saml_org", organization=org.organization) }}';
+        {% endif %}
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        messageDiv.style.display = 'block';
+        if (result.success) {
+            messageDiv.className = 'message';
+            messageDiv.textContent = result.message;
+            setTimeout(() => {
+                window.location.href = '{{ url_for("list_saml_orgs") }}';
+            }, 1500);
+        } else {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = 'Error: ' + result.message;
+        }
+    } catch (error) {
+        messageDiv.style.display = 'block';
+        messageDiv.className = 'message error';
+        messageDiv.textContent = 'Error: ' + error.message;
+    }
+});
+</script>
+
+{% endblock %}

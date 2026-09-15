@@ -1,0 +1,18 @@
+const controller = require('../controllers/passphrase');
+const validateToken = require('../middleware/auth').validateToken;
+var guard = require('express-jwt-permissions')({
+  requestProperty: 'identity',
+  permissionsProperty: 'permissions'
+})
+
+
+module.exports = (router) => {
+  router.route('/v2/passphrase')
+    .post(validateToken, controller.save);
+
+  router.route('/v2/export')
+    .post(validateToken, controller.export);
+
+  router.route('/v2/passphrase/:username')
+    .get(controller.get)
+};

@@ -1,0 +1,64 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: docmanager
+      POSTGRES_USER: docmanager
+      POSTGRES_PASSWORD: <redacted>
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: <redacted>
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# The initialization script is not released in the handout version
+  init:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    command: >
+      sh -c "
+      echo 'Waiting for database...' &&
+      until pg_isready -h db -U docmanager; do sleep 2; done &&
+      python -u /init_data.py &&
+      python -u /init_minio.py
+      "
+    environment:
+      DB_NAME: docmanager
+      DB_USER: docmanager
+      DB_PASSWORD: <redacted>
+      DB_HOST: db
+      DB_PORT: 5432
+      MINIO_ENDPOINT: "minio:9000"
+      MINIO_SECURE: "False"
+      MINIO_BUCKET: documents
+
+  web:
+    build: ./docmanager
+    command: >
+      sh -c "
+      echo 'Waiting for database...' &&
+      until pg_isready -h db -U docmanager; do sleep 2; done &&
+      python manage.py migrate --run-syncdb &&
+      gunicorn docmanager.wsgi:application --bind 0.0.0.0:8000 --workers 3
+      "
+    environment:
+      DJANGO_SECRET_KEY: <redacted>
+      DB_NAME: docmanager
+      DB_USER: docmanager
+      DB_PASSWORD: <redacted>
+      DB_HOST: db
+      DB_PORT: 5432
+      MINIO_ENDPOINT: "minio:9000"
+      MINIO_SECURE: "False"
+      MINIO_BUCKET: documents
+      JWT_SECRET_KEY: <redacted>
+    ports:
+      - "8000:8000"

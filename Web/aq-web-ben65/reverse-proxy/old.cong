@@ -1,0 +1,21 @@
+server {
+  listen 80;
+  server_name ${WEB_ORIGIN} *.${WEB_ORIGIN};
+
+  location / {
+    proxy_pass http://web:80;
+    proxy_set_header Host $host;
+
+  }
+}
+
+server {
+  listen 80;
+  server_name ${SANDBOX_ORIGIN};
+
+  location / {
+    proxy_pass http://sandbox:80;
+    proxy_set_header Host $host;
+  }
+}
+

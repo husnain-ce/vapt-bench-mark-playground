@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}{{ game.title }} | Nightbyte{% endblock %}
+
+{% block content %}
+<section class="detail-hero">
+    <div class="detail-art">
+        <img src="{{ url_for('store.capsule', slug=game.slug) }}" alt="{{ game.title }}">
+    </div>
+    <div class="detail-copy">
+        <p class="eyebrow">{{ game.studio }} · {{ game.genre }}</p>
+        <h1>{{ game.title }}</h1>
+        <p class="hero-copy">{{ game.blurb }}</p>
+        <div class="detail-pills">
+            <span>{{ game.tagline }}</span>
+            <span>{% if game.released %}Stable release{% else %}Private listing{% endif %}</span>
+            <span>{{ game.price_cents|money }}</span>
+        </div>
+        <div class="detail-actions">
+            {% if current_user.is_authenticated and game.released %}
+                <form method="post" action="{{ url_for('store.add_to_library') }}">
+                    <input type="hidden" name="slug" value="{{ game.slug }}">
+                    <button type="submit">Add to Library</button>
+                </form>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+                <form method="post" action="{{ url_for('store.spotlight_request') }}">
+                    <input type="hidden" name="listing" value="{{ url_for('store.game', slug=game.slug) }}">
+                    <button type="submit">Request Front-Page Spotlight</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="content-grid single-main">
+    <div class="main-column">
+        <div class="section-header">
+            <p class="eyebrow">Capsule Notes</p>
+            <h2>Quick review card preview</h2>
+        </div>
+        <div class="inline-preview-layout">
+            <form class="panel-form" method="post" action="{{ url_for('store.review_preview') }}" data-async-target="#review-preview">
+                <input type="text" name="headline" placeholder="Headline">
+                <textarea name="body" rows="5" placeholder="Write a sharp little capsule review"></textarea>
+                <button type="submit">Render Preview</button>
+            </form>
+            <div id="review-preview" class="preview-slot tall-slot">{% include "partials/review_preview.html" %}</div>
+        </div>
+    </div>
+</section>
+{% endblock %}

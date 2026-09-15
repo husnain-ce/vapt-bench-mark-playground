@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Compose Document - Document Manager{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Compose New Document</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="title">Document Heading:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="content">Document Body:</label>
+            <textarea id="content" name="content" required></textarea>
+        </div>
+        
+        <div class="flex-gap">
+            <button type="submit" class="btn btn-success">Save Document</button>
+            <a href="{{ url_for('workspace.home') }}" class="btn">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

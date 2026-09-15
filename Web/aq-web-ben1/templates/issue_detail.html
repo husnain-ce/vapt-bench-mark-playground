@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}{{ issue.key }} - Jira Integration Demo{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('issues') }}">Issues</a></li>
+                <li class="breadcrumb-item active">{{ issue.key }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+{% if issue and 'error' not in issue %}
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Issue Header -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if issue.fields.issuetype and issue.fields.issuetype.iconUrl %}
+                            <img src="{{ issue.fields.issuetype.iconUrl }}" 
+                                 alt="{{ issue.fields.issuetype.name }}"
+                                 style="width: 32px; height: 32px;"
+                                 class="me-2">
+                        {% endif %}
+                        <h2 class="mb-0">{{ issue.key }}</h2>
+                    </div>
+                    <h3 class="h4">{{ issue.fields.summary }}</h3>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-card-text"></i> Description</h5>
+                </div>
+                <div class="card-body">
+                    {% if issue.fields.description %}
+                        <div class="issue-description">
+                            {{ issue.fields.description|safe }}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No description provided.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Comments -->
+            {% if comments %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="bi bi-chat-left-text"></i> Comments ({{ comments|length }})
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% for comment in comments %}
+                            <div class="comment mb-3 {% if not loop.last %}pb-3 border-bottom{% endif %}">
+                                <div class="d-flex align-items-start mb-2">
+                                    {% if comment.author and comment.author.avatarUrls %}
+                                        <img src="{{ comment.author.avatarUrls['32x32'] }}" 
+                                             alt="{{ comment.author.displayName }}"
+                                             class="rounded-circle me-2"
+                                             style="width: 32px; height: 32px;">
+                                    {% endif %}
+                                    <div>
+                                        <strong>
+                                            {{ comment.author.displayName if comment.author else 'Unknown' }}
+                                        </strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ comment.created|format_date }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="ms-5">
+                                    {{ comment.body|safe }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Details</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Status:</dt>
+                        <dd class="col-sm-7">
+                            {% if issue.fields.status %}
+                                <span class="badge 
+                                    {% if issue.fields.status.name == 'Done' %}bg-success
+                                    {% elif issue.fields.status.name == 'In Progress' %}bg-primary
+                                    {% elif issue.fields.status.name == 'To Do' %}bg-secondary
+                                    {% else %}bg-info{% endif %}">
+                                    {{ issue.fields.status.name }}
+                                </span>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-5">Priority:</dt>
+                        <dd class="col-sm-7">
+                            {% if issue.fields.priority %}
+                                <span class="d-flex align-items-center">
+                                    {% if issue.fields.priority.iconUrl %}
+                                        <img src="{{ issue.fields.priority.iconUrl }}" 
+                                             alt="{{ issue.fields.priority.name }}"
+                                             style="width: 16px; height: 16px;"
+                                             class="me-1">
+                                    {% endif %}
+                                    {{ issue.fields.priority.name }}
+                                </span>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-5">Type:</dt>
+                        <dd class="col-sm-7">
+                            {% if issue.fields.issuetype %}
+                                {{ issue.fields.issuetype.name }}
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-5">Assignee:</dt>
+                        <dd class="col-sm-7">
+                            {% if issue.fields.assignee %}
+                                <div class="d-flex align-items-center">
+                                    {% if issue.fields.assignee.avatarUrls %}
+                                        <img src="{{ issue.fields.assignee.avatarUrls['24x24'] }}" 
+                                             alt="{{ issue.fields.assignee.displayName }}"
+                                             class="rounded-circle me-2"
+                                             style="width: 24px; height: 24px;">
+                                    {% endif %}
+                                    {{ issue.fields.assignee.displayName }}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">Unassigned</span>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-5">Reporter:</dt>
+                        <dd class="col-sm-7">
+                            {% if issue.fields.reporter %}
+                                {{ issue.fields.reporter.displayName }}
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-5">Created:</dt>
+                        <dd class="col-sm-7">
+                            {{ issue.fields.created|format_date }}
+                        </dd>
+
+                        <dt class="col-sm-5">Updated:</dt>
+                        <dd class="col-sm-7">
+                            {{ issue.fields.updated|format_date }}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Project Info -->
+            {% if issue.fields.project %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0"><i class="bi bi-folder"></i> Project</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            {% if issue.fields.project.avatarUrls %}
+                                <img src="{{ issue.fields.project.avatarUrls['32x32'] }}" 
+                                     alt="{{ issue.fields.project.name }}"
+                                     class="rounded me-2"
+                                     style="width: 32px; height: 32px;">
+                            {% endif %}
+                            <div>
+                                <strong>{{ issue.fields.project.name }}</strong><br>
+                                <span class="badge bg-secondary">{{ issue.fields.project.key }}</span>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ url_for('issues', project_key=issue.fields.project.key) }}" 
+                               class="btn btn-sm btn-outline-primary w-100">
+                                <i class="bi bi-list-task"></i> View Project Issues
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>Error loading issue.</strong>
+        The issue could not be found or you don't have permission to view it.
+    </div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col">
+        <a href="{{ url_for('issues') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Issues
+        </a>
+    </div>
+</div>
+{% endblock %}

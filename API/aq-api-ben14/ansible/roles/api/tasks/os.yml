@@ -1,0 +1,9 @@
+---
+- name: Install Python
+  apt: name=python state=present
+- name: Install Pip
+  apt: name=python-pip state=present
+- name: Install SQLite3
+  apt: name=sqlite3 state=present
+- name: Install Supervisor
+  apt: name=supervisor state=present

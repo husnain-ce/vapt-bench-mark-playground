@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Library | Nightbyte{% endblock %}
+
+{% block content %}
+<section class="hero-grid narrow-hero">
+    <div class="hero-panel hero-panel-wide">
+        <p class="eyebrow">Library</p>
+        <h1>Your shelf, your backlog, your poor time management.</h1>
+        <form class="search-bar" method="get" action="{{ url_for('store.library') }}">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search your library">
+            <button type="submit">Scan Library</button>
+        </form>
+    </div>
+</section>
+
+<section class="content-grid single-main">
+    <div class="main-column">
+        <div class="game-grid">
+            {% for game in games %}
+                <article class="game-card library-card">
+                    <iframe class="live-capsule" src="{{ url_for('store.live_capsule', slug=game.slug) }}" title="{{ game.title }}"></iframe>
+                    <div class="game-card-body">
+                        <div class="game-card-topline">
+                            <span>{{ game.studio }}</span>
+                            <span>{{ game.genre }}</span>
+                        </div>
+                        <h3>{{ game.title }}</h3>
+                        <p>{{ game.blurb }}</p>
+                    </div>
+                </article>
+            {% else %}
+                <div class="empty-state">
+                    <h2>No matching games on this shelf.</h2>
+                    <p>Try a shorter query or add a few more late-night purchases.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

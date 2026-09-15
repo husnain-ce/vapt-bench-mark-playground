@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Report URL{% endblock %}
+
+{% block content %}
+<h2>Report a URL to the Bot</h2>
+<form method="POST" action="{{ url_for('report') }}">
+  <label for="url">URL:</label>
+  <input type="text" id="url" name="url" required>
+  <input type="submit" value="Send to Bot">
+</form>
+{% endblock %}
+

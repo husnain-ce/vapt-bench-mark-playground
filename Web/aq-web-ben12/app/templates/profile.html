@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.username }} | Nightbyte{% endblock %}
+
+{% block content %}
+<section class="profile-shell">
+    <div class="profile-card" style="--profile-accent: {{ profile.accent }};">
+        <p class="eyebrow">Public Profile</p>
+        <h1>{{ profile.username }}</h1>
+        <p class="profile-headline">{{ profile.headline }}</p>
+        <div class="status-pill">{{ profile.status }}</div>
+    </div>
+    <div class="profile-library">
+        <div class="section-header">
+            <p class="eyebrow">Showcase</p>
+            <h2>Visible library picks</h2>
+        </div>
+        <div class="mini-card-grid">
+            {% for game in games %}
+                <a class="mini-game-card" href="{{ url_for('store.game', slug=game.slug) }}">
+                    <img src="{{ url_for('store.capsule', slug=game.slug) }}" alt="{{ game.title }}">
+                    <span>{{ game.title }}</span>
+                </a>
+            {% else %}
+                <div class="empty-state">
+                    <h2>No public picks yet.</h2>
+                    <p>This profile is still warming up.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

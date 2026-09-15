@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Import Repository - HgHub{% endblock %}
+{% block content %}
+<h1>Import Repository</h1>
+<div class="card" style="max-width: 500px;">
+    <form method="POST">
+        <label for="url">Clone URL</label>
+        <input type="url" id="url" name="url" required placeholder="https://example.com/repo">
+        <small style="display: block; color: #6a737d; margin-bottom: 12px;">Only http:// and https:// URLs are supported.</small>
+        <label for="name">Repository Name</label>
+        <input type="text" id="name" name="name" required pattern="[a-zA-Z0-9][a-zA-Z0-9._-]*[a-zA-Z0-9]">
+        <small style="display: block; color: #6a737d; margin-bottom: 12px;">Letters, numbers, dots, underscores, hyphens only.</small>
+        <button type="submit" class="btn">Import Repository</button>
+    </form>
+</div>
+{% endblock %}

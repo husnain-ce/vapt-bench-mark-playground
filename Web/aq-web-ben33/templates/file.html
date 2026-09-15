@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ filepath }} - {{ username }}/{{ repo_name }} - HgHub{% endblock %}
+{% block content %}
+<h1><a href="{{ url_for('view_repo', username=username, repo_name=repo_name, rev=current_rev) }}">{{ username }}/{{ repo_name }}</a> / {{ filepath }}</h1>
+<div class="card" style="margin-bottom: 16px; padding: 8px 16px;">
+    <strong>Revision:</strong> <code>{{ current_rev }}</code>
+    <div style="margin-top: 8px;">
+        {% if current_rev != 'tip' %}
+        <a href="{{ url_for('view_file', username=username, repo_name=repo_name, filepath=filepath) }}">View at tip</a>
+        {% endif %}
+    </div>
+</div>
+<div class="card">
+    <pre><code>{{ content }}</code></pre>
+</div>
+{% endblock %}

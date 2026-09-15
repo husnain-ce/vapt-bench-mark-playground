@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}HgHub - My Repositories{% endblock %}
+{% block content %}
+{% if session.username %}
+<h1>My Repositories</h1>
+{% if repos %}
+<div class="card">
+    <ul class="repo-list">
+        {% for repo in repos %}
+        <li>
+            <a href="{{ url_for('view_repo', username=repo.owner, repo_name=repo.name) }}">
+                <strong>{{ repo.name }}</strong>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% else %}
+<p>No repositories yet. <a href="{{ url_for('new_repo') }}">Create one!</a></p>
+{% endif %}
+{% else %}
+<h1>Welcome to HgHub</h1>
+<p><a href="{{ url_for('login') }}">Log in</a> or <a href="{{ url_for('register') }}">register</a> to view your repositories.</p>
+{% endif %}
+{% endblock %}

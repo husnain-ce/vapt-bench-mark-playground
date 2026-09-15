@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nightbyte{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+</head>
+<body>
+    <div class="screen-noise"></div>
+    <div class="page-shell">
+        <header class="topbar">
+            <a class="brand" href="{{ url_for('store.index') }}">
+                <span class="brand-mark"></span>
+                <span class="brand-copy">
+                    <strong>NIGHTBYTE</strong>
+                    <small>midnight builds & electric shelves</small>
+                </span>
+            </a>
+            <nav class="nav-links">
+                <a href="{{ url_for('store.index') }}">Store</a>
+                <a href="{{ url_for('store.market') }}">Market</a>
+                <a href="{{ url_for('store.support') }}">Support</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('store.library') }}">Library</a>
+                    <a href="{{ url_for('store.profile', username=current_user.username) }}">Profile</a>
+                    <a href="{{ url_for('auth.logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Login</a>
+                    <a class="button-link" href="{{ url_for('auth.register') }}">Create Account</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-stack">
+                    {% for message in messages %}
+                        <div class="flash">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+    <script src="{{ url_for('static', filename='js/site.js') }}"></script>
+</body>
+</html>

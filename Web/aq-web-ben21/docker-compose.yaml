@@ -1,0 +1,13 @@
+services:
+  web:
+    build: ./src-web
+    ports:
+      - "80:80"
+    restart: always
+
+  bot:
+    build: ./src-bot
+    restart: always
+    environment:
+      - FLAG=ctf{REDACTED}
+      - WEB_ORIGIN=http://web

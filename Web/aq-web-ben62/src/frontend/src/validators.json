@@ -1,0 +1,49 @@
+[
+    {
+        "field": "converted_time",
+        "validator": {
+            "regex": true,
+            "check": "^\\d{2}:\\d{2}$"
+        }
+    },
+    {
+        "field": "from_zone", 
+        "validator": {
+            "regex": false
+        }
+    },
+    {
+        "field": "to_zone", 
+        "validator": {
+            "regex": false
+        }
+    },
+    {
+        "field":"from_hour_angle",
+        "validator": {
+            "regex": true,
+            "check": "^\\d+\\.\\d+$"
+        }
+    },
+    {
+        "field":"from_minute_angle",
+        "validator": {
+            "regex": true,
+            "check": "^\\d+\\.\\d+$"
+        }
+    },
+    {
+        "field":"to_hour_angle",
+        "validator": {
+            "regex": true,
+            "check": "^\\d+\\.\\d+$"
+        }
+    },
+    {
+        "field":"to_minute_angle",
+        "validator": {
+            "regex": true,
+            "check": "^\\d+\\.\\d+$"
+        }
+    }
+]

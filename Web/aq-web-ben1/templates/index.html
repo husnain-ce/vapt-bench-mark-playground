@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Project Hub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="text-center mb-5">
+            <h1 class="display-4">
+                <i class="bi bi-grid-3x3-gap text-primary"></i>
+                Project Hub
+            </h1>
+            <p class="lead text-muted">
+                Your centralized project and issue management platform
+            </p>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-plug"></i> Connection Status
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if connection_status %}
+                    {% if connection_status.success %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <strong>Connected!</strong> {{ connection_status.message }}
+                        </div>
+                        <ul class="list-unstyled mb-0">
+                            <li><strong>User:</strong> {{ connection_status.user }}</li>
+                            <li><strong>Email:</strong> {{ connection_status.email }}</li>
+                        </ul>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-x-circle-fill"></i>
+                            <strong>Connection Failed!</strong> {{ connection_status.message }}
+                        </div>
+                        <p class="text-muted mb-0">
+                            Please check your configuration in the <code>.env</code> file.
+                        </p>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <strong>Not Configured!</strong>
+                        Backend service is not configured.
+                    </div>
+                    <p class="text-muted">
+                        Please create a <code>.env</code> file with your credentials.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-star"></i> Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-folder text-primary fs-3 me-3"></i>
+                            <div>
+                                <h6>View Projects</h6>
+                                <p class="text-muted small mb-0">
+                                    Browse all projects you have access to
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-list-task text-primary fs-3 me-3"></i>
+                            <div>
+                                <h6>Browse Issues</h6>
+                                <p class="text-muted small mb-0">
+                                    View and filter issues by project or status
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-eye text-primary fs-3 me-3"></i>
+                            <div>
+                                <h6>Issue Details</h6>
+                                <p class="text-muted small mb-0">
+                                    View detailed information and comments
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-search text-primary fs-3 me-3"></i>
+                            <div>
+                                <h6>Advanced Search</h6>
+                                <p class="text-muted small mb-0">
+                                    Search issues using query language
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightning"></i> Quick Start
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('projects') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-folder"></i> View All Projects
+                    </a>
+                    <a href="{{ url_for('issues') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-list-task"></i> Browse All Issues
+                    </a>
+                    <a href="{{ url_for('search') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-search"></i> Search Issues
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

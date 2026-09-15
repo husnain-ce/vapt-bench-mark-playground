@@ -1,0 +1,18 @@
+services:
+ vampi-secure:
+  build: ./
+  container_name: vampi-secure
+  ports:
+   - 5001:5000
+  environment:
+   - vulnerable=0
+   - tokentimetolive=3600
+
+ vampi-vulnerable:
+  build: ./
+  container_name: vampi-vulnerable
+  ports:
+   - 5002:5000
+  environment:
+   - vulnerable=1
+   - tokentimetolive=3600
