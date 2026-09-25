@@ -1,4 +1,4 @@
-# oxo-android-ben6 Cleartext sensitive data stored in external Storage - 
+# aq-android-ben6 Cleartext sensitive data stored in external Storage - 
 
 ## Challenge Details
 

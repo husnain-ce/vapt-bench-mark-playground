@@ -1,4 +1,4 @@
-# oxo-android-ben15 Session Remains Active After Password Change
+# aq-android-ben15 Session Remains Active After Password Change
 
 ## Challenge Details
 

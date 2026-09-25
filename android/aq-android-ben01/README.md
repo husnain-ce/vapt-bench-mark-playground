@@ -1,4 +1,4 @@
-# oxo-android-ben1 Execute JS Open URL redirect - 
+# aq-android-ben1 Execute JS Open URL redirect - 
 
 ## Challenge Details
 

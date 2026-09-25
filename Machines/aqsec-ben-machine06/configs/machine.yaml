@@ -1,0 +1,44 @@
+machine:
+  id: aqsec-ben-machine06
+  name: "aqsec-ben-machine06"
+
+  download:
+    url: "https://download.vulnhub.com/fhd/FHD_CTF.zip"
+    archive_name: "FHD_CTF.zip"
+    md5: "D2BE74CE12849C1F14E6D6F0D3D5407B"
+    sha1: "307F013354A5459E9D69B419A84505E05A30F593"
+
+  archive:
+    type: "zip"
+    nested_type: "ova"
+
+  disk:
+    source_format: "vmdk"
+    search_glob: "*.vmdk"
+    runtime_format: "qcow2"
+    runtime_name: "disk.qcow2"
+    convert_to_runtime: true
+
+  vm:
+    architecture: "x86_64"
+    acceleration: "auto"
+    memory_mb: 2048
+    vcpus: 2
+    nic_model: "e1000"
+
+  network:
+    dhcp: true
+
+  ports:
+    - {guest: 22, protocol: tcp, service: ssh}
+    - {guest: 80, protocol: tcp, service: http}
+    - {guest: 8080, protocol: tcp, service: http-alt}
+
+  readiness:
+    boot_wait_seconds: 10
+    timeout_seconds: 900
+    interval_seconds: 5
+    probes:
+      - {type: tcp, external_port_for_guest: 80}
+      - {type: tcp, external_port_for_guest: 8080}
+      - {type: ssh_banner, external_port_for_guest: 22}

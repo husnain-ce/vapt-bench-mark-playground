@@ -1,0 +1,6 @@
+aws:
+  region: "eu-north-1"
+  instance_type: "c8i.large"
+
+network:
+  allowed_cidr: "0.0.0.0/0"

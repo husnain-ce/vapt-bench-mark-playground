@@ -1,4 +1,4 @@
-# oxo-android-ben7 Cleartext sensitive data stored in SQLite - 
+# aq-android-ben7 Cleartext sensitive data stored in SQLite - 
 
 ## Challenge Details
 

@@ -1,4 +1,4 @@
-# oxo-android-ben5 XSS through intent parameter injection -
+# aq-android-ben5 XSS through intent parameter injection -
 
 ## Challenge Details
 

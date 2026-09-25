@@ -1,4 +1,4 @@
-# oxo-android-ben3 Presence of hardcoded secrets - 
+# aq-android-ben3 Presence of hardcoded secrets - 
 
 ## Challenge Details
 

@@ -1,0 +1,60 @@
+machine:
+  id: metasploitable2
+  name: "Metasploitable 2"
+
+  download:
+    url: "https://sourceforge.net/projects/metasploitable/files/latest/download"
+    archive_name: "metasploitable-linux-2.0.0.zip"
+    sha256: "2ae8788e95273eee87bd379a250d86ec52f286fa7fe84773a3a8f6524085a1ff"
+
+  disk:
+    format: "vmdk"
+    search_glob: "*.vmdk"
+
+  vm:
+    memory_mb: 768
+    vcpus: 1
+    nic_model: "e1000"
+
+  # Full TCP service set shown in Rapid7's Metasploitable 2 guide.
+  # High RPC/NFS ports can vary across boots; these are the published
+  # observed values and can be edited here without changing Python.
+  ports:
+    - {guest: 21, protocol: tcp, service: ftp}
+    - {guest: 22, protocol: tcp, service: ssh}
+    - {guest: 23, protocol: tcp, service: telnet}
+    - {guest: 25, protocol: tcp, service: smtp}
+    - {guest: 53, protocol: tcp, service: dns}
+    - {guest: 53, protocol: udp, service: dns}
+    - {guest: 80, protocol: tcp, service: http}
+    - {guest: 111, protocol: tcp, service: rpcbind}
+    - {guest: 111, protocol: udp, service: rpcbind}
+    - {guest: 139, protocol: tcp, service: netbios}
+    - {guest: 445, protocol: tcp, service: smb}
+    - {guest: 512, protocol: tcp, service: rexec}
+    - {guest: 513, protocol: tcp, service: rlogin}
+    - {guest: 514, protocol: tcp, service: rsh}
+    - {guest: 1099, protocol: tcp, service: rmiregistry}
+    - {guest: 1524, protocol: tcp, service: ingreslock}
+    - {guest: 2049, protocol: tcp, service: nfs}
+    - {guest: 2049, protocol: udp, service: nfs}
+    - {guest: 2121, protocol: tcp, service: ftp-alt}
+    - {guest: 3306, protocol: tcp, service: mysql}
+    - {guest: 3632, protocol: tcp, service: distccd}
+    - {guest: 5432, protocol: tcp, service: postgresql}
+    - {guest: 5900, protocol: tcp, service: vnc}
+    - {guest: 6000, protocol: tcp, service: x11}
+    - {guest: 6667, protocol: tcp, service: irc}
+    - {guest: 6697, protocol: tcp, service: irc-alt}
+    - {guest: 8009, protocol: tcp, service: ajp13}
+    - {guest: 8180, protocol: tcp, service: tomcat}
+    - {guest: 8787, protocol: tcp, service: unknown}
+    - {guest: 39292, protocol: tcp, service: rpc-mountd-observed}
+    - {guest: 43729, protocol: tcp, service: rpc-status-observed}
+    - {guest: 44813, protocol: tcp, service: dynamic-observed}
+    - {guest: 55852, protocol: tcp, service: rpc-nlockmgr-observed}
+
+    # UDP RPC values seen in Rapid7's rpcinfo example. They can move.
+    - {guest: 34887, protocol: udp, service: rpc-mountd-observed}
+    - {guest: 46696, protocol: udp, service: rpc-nlockmgr-observed}
+    - {guest: 53318, protocol: udp, service: rpc-status-observed}

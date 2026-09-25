@@ -1,4 +1,4 @@
-# oxo-android-ben13 Unprotected AIDL Service allows external CRUD access to Memo
+# aq-android-ben13 Unprotected AIDL Service allows external CRUD access to Memo
 
 ## Challenge Details
 

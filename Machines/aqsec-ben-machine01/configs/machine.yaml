@@ -1,0 +1,58 @@
+machine:
+  id: aqsec-ben-machine01
+  name: "aqsec-ben-machine01"
+
+  download:
+    url: "https://download.vulnhub.com/empire/02-Breakout.zip"
+    archive_name: "02-Breakout.zip"
+
+    # Hashes published by VulnHub
+    md5: "C87BC1DB9BD51205B1E9EA441F8222AB"
+    sha1: "164DF36D136E5DA83FCCCF503D36A59B0D26E14A"
+
+  archive:
+    # Empire Breakout ZIP contains files directly:
+    #   02 - Breakout/Breakout.ovf
+    #   02 - Breakout/Breakout-disk1.vmdk
+    #   02 - Breakout/Breakout.mf
+    # It is direct ZIP -> VMDK, not ZIP -> OVA.
+    type: "zip"
+
+  disk:
+    source_format: "vmdk"
+    search_glob: "*.vmdk"
+
+    # Convert streamOptimized VMDK to qcow2 before boot.
+    runtime_format: "qcow2"
+    runtime_name: "disk.qcow2"
+    convert_to_runtime: true
+
+  vm:
+    architecture: "x86_64"
+
+    # auto = KVM if /dev/kvm exists, otherwise TCG fallback.
+    acceleration: "auto"
+
+    memory_mb: 1024
+    vcpus: 1
+    nic_model: "e1000"
+
+  network:
+    dhcp: true
+
+  ports:
+    - {guest: 80, protocol: tcp, service: http}
+    - {guest: 139, protocol: tcp, service: netbios-ssn}
+    - {guest: 445, protocol: tcp, service: microsoft-ds}
+    - {guest: 10000, protocol: tcp, service: webmin}
+    - {guest: 20000, protocol: tcp, service: http-alt}
+
+  readiness:
+    # Reduced from 90s to 10s as requested.
+    boot_wait_seconds: 10
+    timeout_seconds: 900
+    interval_seconds: 5
+    probes:
+      - {type: tcp, external_port_for_guest: 80}
+      - {type: tcp, external_port_for_guest: 10000}
+      - {type: tcp, external_port_for_guest: 20000}

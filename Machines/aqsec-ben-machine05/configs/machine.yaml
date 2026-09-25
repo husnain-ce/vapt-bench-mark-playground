@@ -1,0 +1,49 @@
+machine:
+  id: aqsec-ben-machine05
+  name: "aqsec-ben-machine05"
+
+  download:
+    url: "https://download.vulnhub.com/noobbox/NoobBox.zip"
+    archive_name: "NoobBox.zip"
+
+    # Hashes published by VulnHub
+    md5: "DA2987BD8B1F07CF20F1041D327C13BF"
+    sha1: "A92FD485BDF39A18FED4EFE158C8B15084845B6B"
+
+  archive:
+    # NoobBox: 1 is listed as VirtualBox OVA.
+    # The download is ZIP and should contain an OVA.
+    # If the ZIP contains OVF/VMDK directly, the extractor also handles that.
+    type: "zip"
+    nested_type: "ova"
+
+  disk:
+    source_format: "vmdk"
+    search_glob: "*.vmdk"
+    runtime_format: "qcow2"
+    runtime_name: "disk.qcow2"
+    convert_to_runtime: true
+
+  vm:
+    architecture: "x86_64"
+    acceleration: "auto"
+    memory_mb: 2048
+    vcpus: 2
+    nic_model: "e1000"
+
+  network:
+    dhcp: true
+
+  # Main expected ports.
+  # Guest SSH is remapped to host 2222 because Ubuntu host keeps port 22.
+  ports:
+    - {guest: 22, protocol: tcp, service: ssh}
+    - {guest: 80, protocol: tcp, service: http}
+
+  readiness:
+    boot_wait_seconds: 10
+    timeout_seconds: 900
+    interval_seconds: 5
+    probes:
+      - {type: tcp, external_port_for_guest: 80}
+      - {type: ssh_banner, external_port_for_guest: 22}

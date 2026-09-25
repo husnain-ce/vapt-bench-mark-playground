@@ -1,4 +1,4 @@
-# oxo-android-ben14 Critical activity is not protected
+# aq-android-ben14 Critical activity is not protected
 
 ## Challenge Details
 

@@ -1,4 +1,4 @@
-# oxo-android-ben2 Cleartext sensitive data stored in SharedPreferences - 
+# aq-android-ben2 Cleartext sensitive data stored in SharedPreferences - 
 
 ## Challenge Details
 

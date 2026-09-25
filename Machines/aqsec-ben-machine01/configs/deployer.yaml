@@ -1,0 +1,7 @@
+aws:
+  region: "eu-north-1"
+  instance_type: "m7i-flex.large"
+
+network:
+  # auto = detect your public IPv4 and allow only that /32.
+  allowed_cidr: "0.0.0.0/0"

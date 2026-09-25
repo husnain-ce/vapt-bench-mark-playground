@@ -81,7 +81,7 @@ def _require_user() -> tuple[dict[str, Any] | None, Any | None]:
 def index():
     return jsonify(
         {
-            "app": "oxo-web-ben5",
+            "app": "aq-web-ben2",
             "name": "Insecure Deserialization Benchmark",
             "primary_request": "POST /api/import",
             "selected_field": "profile_state",

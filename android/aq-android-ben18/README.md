@@ -1,4 +1,4 @@
-# oxo-android-ben18 News Reader App
+# aq-android-ben18 News Reader App
 
 ## Challenge Details
 

@@ -1,0 +1,8 @@
+aws:
+  region: "eu-north-1"
+  instance_type: "m7i-flex.large"
+
+network:
+  # "auto" = detect the public IPv4 of the machine running Docker and use /32.
+ 
+  allowed_cidr: "0.0.0.0/0"

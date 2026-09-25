@@ -1,0 +1,21 @@
+name: metasploitable2
+archive_url: "https://sourceforge.net/projects/metasploitable/files/latest/download"
+archive_name: "metasploitable-linux-2.0.0.zip"
+
+# Current official SourceForge SHA-256.
+sha256: "2ae8788e95273eee87bd379a250d86ec52f286fa7fe84773a3a8f6524085a1ff"
+
+ports:
+  - {guest: 21, protocol: tcp}
+  - {guest: 22, protocol: tcp}
+  - {guest: 23, protocol: tcp}
+  - {guest: 25, protocol: tcp}
+  - {guest: 53, protocol: tcp}
+  - {guest: 53, protocol: udp}
+  - {guest: 80, protocol: tcp}
+  - {guest: 111, protocol: tcp}
+  - {guest: 111, protocol: udp}
+  - {guest: 139, protocol: tcp}
+  - {guest: 445, protocol: tcp}
+  - {guest: 3306, protocol: tcp}
+  - {guest: 8180, protocol: tcp}
