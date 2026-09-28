@@ -1,0 +1,18 @@
+# Aqira Cyber Range binding for Vulhub CVE-2021-44228 (Log4Shell / Apache Solr 8.11.0).
+# Same vulnerable image as the upstream vulhub docker-compose.yml, but the web port
+# is bound to loopback only (127.0.0.1:8105) and the container is attached to the
+# aqira-range network so nginx (log4shell.range.example.com) can proxy to it.
+# The JVM remote-debug port 5005 is intentionally NOT published off-box.
+services:
+  solr:
+    image: vulhub/solr:8.11.0
+    container_name: apilab-log4shell
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8105:8983"   # Solr admin UI / vulnerable endpoint
+    networks:
+      - aqira-range
+
+networks:
+  aqira-range:
+    external: true

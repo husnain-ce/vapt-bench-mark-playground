@@ -1,0 +1,26 @@
+# OWASP Juice Shop — Aqira Cyber Range (Agent B / Web Classic Lab)
+# Bind to loopback only; attach to the shared aqira-range network.
+# nginx reverse-proxies juice.range.example.com -> 127.0.0.1:8101
+name: weblab-juice
+services:
+  juice-shop:
+    image: bkimminich/juice-shop
+    container_name: range-juice-shop
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8101:3000"
+    networks:
+      - aqira-range
+    environment:
+      - NODE_ENV=unsafe   # enable all challenges (incl. those disabled in ctf/prod modes)
+    healthcheck:
+      # distroless image: only the node binary exists (/nodejs/bin/node)
+      test: ["CMD", "/nodejs/bin/node", "-e", "require('http').get('http://127.0.0.1:3000/rest/admin/application-version',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+networks:
+  aqira-range:
+    external: true

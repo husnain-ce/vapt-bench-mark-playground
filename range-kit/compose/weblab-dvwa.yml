@@ -1,0 +1,24 @@
+# DVWA (Damn Vulnerable Web Application) — Aqira Cyber Range (Agent B / Web Classic Lab)
+# Bind to loopback only; attach to the shared aqira-range network.
+# nginx reverse-proxies dvwa.range.example.com -> 127.0.0.1:8102
+name: weblab-dvwa
+services:
+  dvwa:
+    image: vulnerables/web-dvwa
+    container_name: range-dvwa
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8102:80"
+    networks:
+      - aqira-range
+    healthcheck:
+      # image ships no curl/wget; use the bundled php interpreter
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1/login.php')?0:1);"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  aqira-range:
+    external: true

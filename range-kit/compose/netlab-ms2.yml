@@ -1,0 +1,38 @@
+# Aqira Cyber Range — Agent A (Network Lab)
+# Metasploitable 2 — intentionally-vulnerable Linux target.
+# Attached to the pre-created `aqira-range` bridge with STATIC IP 172.30.0.11.
+# Domain ms2.range.example.com maps to this IP in /etc/hosts (coordinator-owned).
+#
+# Safety: NOT published to any host port / 0.0.0.0. Only reachable on the
+# isolated aqira-range network (172.30.0.0/24). Host + kali-mcp reach it by IP.
+#
+# Bring up:   docker compose -f netlab-ms2.yml up -d
+# Tear down:  docker compose -f netlab-ms2.yml down
+services:
+  metasploitable2:
+    image: tleemcjr/metasploitable2
+    container_name: aqira-ms2
+    hostname: metasploitable2
+    # The base image's rc.local only starts a few daemons (rmiregistry,
+    # unrealircd, vnc, drb). Explicitly start the full classic Metasploitable 2
+    # service set too, so the target is reproducible from code across restarts.
+    command:
+      - /bin/sh
+      - -c
+      - |
+        /etc/rc.local || true
+        for s in portmap openbsd-inetd xinetd apache2 samba postfix mysql \
+                 postgresql-8.3 tomcat5.5 distcc snmpd proftpd; do
+          /etc/init.d/$$s start >/dev/null 2>&1 || true
+        done
+        exec /usr/sbin/sshd -D
+    restart: unless-stopped
+    networks:
+      aqira-range:
+        ipv4_address: 172.30.0.11
+    # No `ports:` on purpose — do not expose vulnerable services off the range.
+
+networks:
+  aqira-range:
+    external: true
+    name: aqira-range

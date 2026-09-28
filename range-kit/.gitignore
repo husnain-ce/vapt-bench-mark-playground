@@ -1,0 +1,14 @@
+# Fetched at deploy time — never commit these (they are multi-MB..GB and reproducible)
+.venv/
+k8s/kubernetes-goat/
+evidence/
+*.pid
+.k8sgoat-pf.pid
+
+# KVM blobs — bring-your-own valid box on the target (see docs/KVM-MS3.md)
+vm/kvm/*.box
+vm/kvm/*.qcow2
+vm/kvm/*.vmdk
+
+# scratch
+*.log

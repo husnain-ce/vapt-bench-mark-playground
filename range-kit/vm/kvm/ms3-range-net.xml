@@ -1,0 +1,11 @@
+<network>
+  <name>ms3-range</name>
+  <bridge name='virbr-ms3' stp='on' delay='0'/>
+  <forward mode='nat'/>
+  <ip address='172.28.128.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='172.28.128.10' end='172.28.128.99'/>
+      <host mac='52:54:00:a3:03:01' name='ms3' ip='172.28.128.30'/>
+    </dhcp>
+  </ip>
+</network>

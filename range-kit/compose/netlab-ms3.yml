@@ -1,0 +1,33 @@
+# Aqira Cyber Range — Agent A (Network Lab)
+# Metasploitable 3 (Ubuntu 14.04) — *Docker-fallback* target.
+#
+# The supplied vagrant box (vm/ms3-ub1404.box) was a truncated, virtualbox-format
+# download (unusable vmdk; no vagrant/packer to rebuild) and RAM was too tight for
+# a KVM VM — see evidence/ms3/deploy.md. This container reproduces the classic
+# MS3-ub1404 Ubuntu 14.04 vulnerable service surface instead.
+#
+# Attached to the pre-created `aqira-range` bridge with STATIC IP 172.30.0.12.
+# Domain ms3.range.example.com maps to this IP in /etc/hosts (coordinator-owned).
+#
+# Safety: NOT published to any host port / 0.0.0.0. Only reachable on the
+# isolated aqira-range network (172.30.0.0/24). Host + kali-mcp reach it by IP.
+#
+# Build+up:   docker compose -f netlab-ms3.yml up -d --build
+# Tear down:  docker compose -f netlab-ms3.yml down
+services:
+  metasploitable3:
+    build:
+      context: ../vm/ms3-lite
+    image: aqira/ms3-lite:ub1404
+    container_name: aqira-ms3
+    hostname: metasploitable3-ub1404
+    restart: unless-stopped
+    networks:
+      aqira-range:
+        ipv4_address: 172.30.0.12
+    # No `ports:` on purpose — do not expose vulnerable services off the range.
+
+networks:
+  aqira-range:
+    external: true
+    name: aqira-range

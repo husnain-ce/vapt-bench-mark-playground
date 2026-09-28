@@ -1,0 +1,17 @@
+services:
+  vampi:
+    image: erev0s/vampi:latest
+    container_name: apilab-vampi
+    restart: unless-stopped
+    environment:
+      # vulnerable mode: no auth guard rails, BOLA/mass-assignment reachable
+      - vulnerable=1
+      - tokentimetolive=6000
+    ports:
+      - "127.0.0.1:8104:5000"
+    networks:
+      - aqira-range
+
+networks:
+  aqira-range:
+    external: true

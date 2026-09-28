@@ -1,0 +1,20 @@
+services:
+  webgoat:
+    image: webgoat/webgoat
+    container_name: apilab-webgoat
+    restart: unless-stopped
+    environment:
+      # Bind WebGoat inside the container to all interfaces so the published
+      # 127.0.0.1 host port can reach it (default image binds to 127.0.0.1).
+      - WEBGOAT_HOST=0.0.0.0
+      - WEBWOLF_HOST=0.0.0.0
+      - TZ=UTC
+    ports:
+      - "127.0.0.1:8103:8080"   # WebGoat UI (served under /WebGoat)
+      - "127.0.0.1:9103:9090"   # WebWolf helper (loopback only)
+    networks:
+      - aqira-range
+
+networks:
+  aqira-range:
+    external: true

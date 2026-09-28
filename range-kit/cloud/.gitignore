@@ -1,0 +1,5 @@
+# Third-party intentionally-vulnerable IaC repos are fetched at deploy time,
+# not vendored (they carry planted example AWS keys and their own licenses).
+cfngoat/
+terragoat/
+kubernetes-goat/

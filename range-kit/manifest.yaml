@@ -1,0 +1,120 @@
+# Aqira Benchmark — lab manifest (single source of truth)
+# Every lab in the range, how it is deployed, and how to verify it.
+# Consumed by bin/verify.sh and the human reader. Keep in sync with compose/,
+# nginx/aqira-range.conf, and hosts/aqira-range.hosts.
+
+range:
+  network: aqira-range
+  subnet: 172.30.0.0/24
+  gateway: 172.30.0.1
+  domain_suffix: range.example.com
+  # Safety: every web/api/cloud lab publishes ONLY to 127.0.0.1 (loopback);
+  # network labs publish NO host ports and are reachable only on the bridge.
+
+labs:
+  - id: juice
+    name: OWASP Juice Shop
+    category: web
+    deploy: compose
+    compose: compose/weblab-juice.yml
+    image: bkimminich/juice-shop
+    bind: 127.0.0.1:8101
+    domain: juice.range.example.com
+    verify: { type: http, host: juice.range.example.com, expect: 200 }
+
+  - id: dvwa
+    name: Damn Vulnerable Web Application
+    category: web
+    deploy: compose
+    compose: compose/weblab-dvwa.yml
+    image: vulnerables/web-dvwa
+    bind: 127.0.0.1:8102
+    domain: dvwa.range.example.com
+    verify: { type: http, host: dvwa.range.example.com, path: /login.php, expect: 200 }
+
+  - id: webgoat
+    name: OWASP WebGoat + WebWolf
+    category: web
+    deploy: compose
+    compose: compose/apilab-webgoat.yml
+    image: webgoat/webgoat
+    bind: 127.0.0.1:8103
+    domain: webgoat.range.example.com
+    verify: { type: http, host: webgoat.range.example.com, path: /WebGoat, expect: [200, 302] }
+
+  - id: vampi
+    name: VAmPI (vulnerable REST API)
+    category: api
+    deploy: compose
+    compose: compose/apilab-vampi.yml
+    image: erev0s/vampi:latest
+    bind: 127.0.0.1:8104
+    domain: vampi.range.example.com
+    verify: { type: http, host: vampi.range.example.com, expect: 200 }
+
+  - id: log4shell
+    name: Log4Shell (Apache Solr 8.11.0, CVE-2021-44228)
+    category: web
+    deploy: compose
+    compose: compose/weblab-log4shell.yml
+    image: vulhub/solr:8.11.0
+    bind: 127.0.0.1:8105
+    domain: log4shell.range.example.com
+    cve: CVE-2021-44228
+    verify: { type: http, host: log4shell.range.example.com, path: /solr/, expect: [200, 302] }
+
+  - id: k8sgoat
+    name: Kubernetes Goat
+    category: cloud-native
+    deploy: k3s          # single-node k3s cluster + kubectl port-forward
+    setup: k8s/deploy-k8s.sh
+    bind: 127.0.0.1:8106  # via kubectl port-forward (see k8s/portforward.sh)
+    domain: k8sgoat.range.example.com
+    verify: { type: http, host: k8sgoat.range.example.com, expect: [200, 302] }
+
+  - id: localstack
+    name: LocalStack (emulated AWS, misconfigured resources)
+    category: cloud
+    deploy: compose
+    compose: compose/cloud-localstack.yml
+    image: localstack/localstack:3.8.1
+    bind: 127.0.0.1:8107
+    domain: localstack.range.example.com
+    seed: cloud/localstack-seed.sh
+    verify: { type: http, host: localstack.range.example.com, path: /_localstack/health, expect: 200 }
+
+  - id: ms2
+    name: Metasploitable 2
+    category: network
+    deploy: compose
+    compose: compose/netlab-ms2.yml
+    image: tleemcjr/metasploitable2
+    ip: 172.30.0.11        # NO host ports — reachable only on the bridge
+    domain: ms2.range.example.com
+    verify: { type: tcp, ip: 172.30.0.11, port: 22 }
+
+  - id: ms3
+    name: Metasploitable 3 (MS3-lite, Ubuntu 14.04)
+    category: network
+    deploy: compose-build  # built from vm/ms3-lite ; KVM path is best-effort (see docs/KVM-MS3.md)
+    compose: compose/netlab-ms3.yml
+    image: aqira/ms3-lite:ub1404
+    ip: 172.30.0.12        # NO host ports — reachable only on the bridge
+    domain: ms3.range.example.com
+    cves: [CVE-2015-3306]  # ProFTPd 1.3.5 mod_copy RCE; +weak SSH creds, cmdi, SQLi
+    verify: { type: tcp, ip: 172.30.0.12, port: 21 }
+
+  - id: iac
+    name: IaC misconfig scan (TerraGoat / CFNGoat / K8s-Goat manifests)
+    category: iac-static
+    deploy: static         # no runtime service; checkov static analysis
+    setup: cloud/iac-scan.sh
+    verify: { type: none }
+
+# Optional attacker workstation (not required to stand up the targets).
+attacker:
+  - id: kali-mcp
+    name: Kali attacker box
+    ip: 172.30.0.2
+    optional: true
+    note: "docker exec kali-mcp msfconsole -q ; not provisioned by this kit"

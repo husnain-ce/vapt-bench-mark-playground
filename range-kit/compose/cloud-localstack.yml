@@ -1,0 +1,29 @@
+# LocalStack — emulated AWS for the Aqira Cyber Range (Agent D).
+# Bound to loopback only (127.0.0.1:8107 -> LocalStack edge 4566) and attached
+# to the shared aqira-range bridge so nginx can proxy localstack.range.example.com.
+# Fully local/emulated: no real AWS account, no spend, nothing exposed off-box.
+services:
+  localstack:
+    image: localstack/localstack:3.8.1   # pinned Community edition (no auth token required)
+    container_name: aqira-localstack
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8107:4566"          # edge / gateway port on loopback
+    environment:
+      - DEBUG=0
+      # Community-only services (no PERSISTENCE / Pro features -> no license needed)
+      - SERVICES=s3,iam,sts,ec2,secretsmanager
+      - EAGER_SERVICE_LOADING=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "localstack-data:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - aqira-range
+
+networks:
+  aqira-range:
+    external: true
+
+volumes:
+  localstack-data:

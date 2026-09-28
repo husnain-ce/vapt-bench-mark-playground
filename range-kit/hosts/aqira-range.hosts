@@ -1,0 +1,9 @@
+# >>> aqira-range >>>
+# Installed into /etc/hosts by bin/install-hosts.sh (idempotent; replaces the
+# block between these markers). Web/API/cloud labs resolve to loopback and are
+# fronted by nginx on :80 by Host header; the two network labs resolve to their
+# static addresses on the aqira-range bridge.
+127.0.0.1 juice.range.example.com dvwa.range.example.com webgoat.range.example.com vampi.range.example.com log4shell.range.example.com k8sgoat.range.example.com localstack.range.example.com
+172.30.0.11 ms2.range.example.com
+172.30.0.12 ms3.range.example.com
+# <<< aqira-range <<<
